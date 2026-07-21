@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airnode Web App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body class="dark-mode">
+    <div id="authScreen" class="auth-screen">
+        <div class="auth-card">
+            <h2>Airnode</h2>
+            <p>Encrypted Live Messenger</p>
+            <div id="authError" class="error-msg"></div>
+            <input type="text" id="authUsername" placeholder="Username">
+            <input type="password" id="authPassword" placeholder="Password">
+            <div class="auth-buttons">
+                <button id="loginBtn">Login</button>
+                <button id="registerBtn">Create Account</button>
+            </div>
+        </div>
+    </div>
+    <div class="app-container hidden" id="appContainer">
+        <aside class="sidebar">
+            <h2>Airnode</h2>
+            <div class="user-card">
+                <div class="avatar" id="myAvatar">Y</div>
+                <div>
+                    <span id="myProfileName">User</span><br>
+                    <small id="myUsNumber">+1 (000) 000-0000</small>
+                </div>
+            </div>
+            <div class="add-friend-box">
+                <h4>Start Chat</h4>
+                <input type="text" id="targetNumberInput" placeholder="Enter US Number (+1...)">
+                <button id="startChatBtn">Open Chat Room</button>
+            </div>
+        </aside>
+        <main class="chat-window">
+            <div class="chat-header"><h3 id="activeChatTitle">Select or Add a Recipient</h3></div>
+            <div class="chat-body" id="chatBody"></div>
+            <div class="chat-input-area">
+                <input type="text" id="msgInput" placeholder="Write a message...">
+                <button id="sendBtn">➤</button>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
