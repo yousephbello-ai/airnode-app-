@@ -1,582 +1,400 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Airnode</title>
-  <script src="/socket.io/socket.io.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airnode Web App</title>
   <style>
     :root {
-      --an-bg-main: #0b0f19;
-      --an-sidebar: #111827;
-      --an-card: #1f2937;
-      --an-card-hover: #374151;
-      --an-input: #1f2937;
-      --an-neon-cyan: #00f2fe;
-      --an-neon-blue: #4facfe;
-      --an-accent-purple: #7c3aed;
-      --an-bubble-sent: linear-gradient(135deg, #0052d4 0%, #4364f7 50%, #6fb1fc 100%);
-      --an-bubble-recv: #1f2937;
-      --an-text-main: #f9fafb;
-      --an-text-muted: #9ca3af;
-      --an-border: #1f2937;
-      --an-check: #00f2fe;
-      --an-header-bg: #111827;
+      --bg-dark: #0f1322;
+      --bg-card: #181e36;
+      --bg-input: #121629;
+      --accent-blue: #2563eb;
+      --accent-light: #38bdf8;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --bubble-self: #2563eb;
+      --bubble-other: #1e293b;
     }
 
-    [data-theme="light"] {
-      --an-bg-main: #f3f4f6;
-      --an-sidebar: #ffffff;
-      --an-card: #e5e7eb;
-      --an-card-hover: #d1d5db;
-      --an-input: #ffffff;
-      --an-neon-cyan: #0284c7;
-      --an-neon-blue: #2563eb;
-      --an-accent-purple: #7c3aed;
-      --an-bubble-sent: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
-      --an-bubble-recv: #ffffff;
-      --an-text-main: #111827;
-      --an-text-muted: #6b7280;
-      --an-border: #e5e7eb;
-      --an-check: #2563eb;
-      --an-header-bg: #ffffff;
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    html, body { height: 100%; width: 100%; overflow: hidden; background: var(--an-bg-main); color: var(--an-text-main); }
-    body { display: flex; transition: background 0.3s, color 0.3s; }
-
-    /* --- Splash Screen --- */
-    #splash-screen {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: var(--an-bg-main); display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 9999; transition: opacity 0.4s ease, visibility 0.4s ease;
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
-    .splash-logo {
-      width: 76px; height: 76px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-accent-purple)); border-radius: 22px; display: flex; align-items: center; justify-content: center;
-      font-size: 38px; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
+
+    .app-container {
+      width: 100%;
+      max-width: 1200px;
+      height: 100vh;
+      display: flex;
+      background: var(--bg-dark);
     }
-    .splash-title { margin-top: 18px; font-size: 22px; font-weight: 700; color: var(--an-text-main); letter-spacing: 1px; }
 
-    /* --- Main App Layout --- */
-    .app-container { display: flex; width: 100vw; height: 100vh; height: 100dvh; position: relative; overflow: hidden; }
-
-    /* Left Sidebar / Chats Screen */
+    /* Sidebar */
     .sidebar {
-      width: 380px; background: var(--an-sidebar); border-right: 1px solid var(--an-border);
-      display: flex; flex-direction: column; flex-shrink: 0; position: relative; transition: background 0.3s; height: 100%;
+      width: 350px;
+      border-right: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-dark);
     }
 
     .sidebar-header {
-      padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; background: var(--an-sidebar); flex-shrink: 0;
-    }
-    .brand-title {
-      font-size: 24px; font-weight: 800;
-      background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-accent-purple));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      letter-spacing: -0.5px;
-    }
-    .header-actions { display: flex; gap: 14px; align-items: center; }
-    .icon-btn { background: none; border: none; color: var(--an-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
-    .icon-btn:hover { color: var(--an-neon-cyan); }
-    .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
-
-    /* Search Bar */
-    .search-box { padding: 8px 16px; flex-shrink: 0; }
-    .search-input-wrapper {
-      display: flex; align-items: center; gap: 10px; background: var(--an-card);
-      padding: 10px 16px; border-radius: 12px; color: var(--an-text-muted); border: 1px solid transparent;
-      transition: border-color 0.2s;
-    }
-    .search-input-wrapper:focus-within { border-color: var(--an-neon-cyan); }
-    .search-input-wrapper input {
-      background: none; border: none; outline: none; color: var(--an-text-main); font-size: 14px; width: 100%;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
-    /* Filters Pill Row */
-    .filters-row { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; flex-shrink: 0; }
-    .pill {
-      background: var(--an-card); color: var(--an-text-muted); font-size: 13px; font-weight: 600;
-      padding: 6px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: all 0.2s;
+    .my-number-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .pill.active, .pill:hover { background: rgba(0, 242, 254, 0.15); color: var(--an-neon-cyan); border-color: rgba(0, 242, 254, 0.3); }
 
-    /* Chat List Container */
-    .chat-list { flex: 1; overflow-y: auto; padding: 6px 0; }
-    .chat-item {
-      display: flex; align-items: center; gap: 14px; padding: 12px 18px; cursor: pointer;
-      transition: background 0.2s; border-left: 3px solid transparent;
+    .avatar-circle {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+      font-size: 14px;
     }
-    .chat-item:hover, .chat-item.active { background: var(--an-card); border-left-color: var(--an-neon-cyan); }
-    
-    .chat-avatar {
-      width: 48px; height: 48px; border-radius: 16px;
-      background: linear-gradient(135deg, var(--an-neon-blue), var(--an-accent-purple));
-      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff;
-      flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-    .chat-info { flex: 1; min-width: 0; }
-    .chat-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    .chat-name { font-size: 15px; font-weight: 600; color: var(--an-text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-    .chat-time { font-size: 11px; color: var(--an-text-muted); }
-    .chat-last-msg { font-size: 13px; color: var(--an-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
-    /* Floating Action Button (+) */
-    .fab-btn {
-      position: absolute; bottom: 70px; right: 20px; width: 52px; height: 52px;
-      background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border-radius: 16px; border: none; color: #0b0f19;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); transition: transform 0.2s, box-shadow 0.2s; z-index: 10;
+    .new-chat-btn {
+      background: var(--accent-light);
+      border: none;
+      color: #0f1322;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .fab-btn:active { transform: scale(0.92); }
-    .fab-btn svg { width: 26px; height: 26px; fill: #0b0f19; }
 
-    /* Bottom Navigation Bar */
-    .bottom-nav {
-      display: flex; justify-content: space-around; align-items: center;
-      padding: 10px 0 8px; background: var(--an-sidebar); border-top: 1px solid var(--an-border); flex-shrink: 0;
+    .recent-list {
+      flex: 1;
+      overflow-y: auto;
     }
-    .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--an-text-muted); font-size: 11px; font-weight: 600; cursor: pointer; border: none; background: none; }
-    .nav-tab.active { color: var(--an-neon-cyan); }
 
-    /* --- Right Chat Panel --- */
-    .chat-panel {
-      flex: 1; display: flex; flex-direction: column; height: 100%; min-height: 0; background: var(--an-bg-main);
-      background-image: radial-gradient(rgba(0, 242, 254, 0.05) 1px, transparent 0); background-size: 28px 28px;
+    .recent-item {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      gap: 12px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      transition: background 0.2s;
     }
+
+    .recent-item:hover, .recent-item.active {
+      background: rgba(255,255,255,0.05);
+    }
+
+    .recent-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .recent-name {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 4px;
+    }
+
+    .recent-msg {
+      font-size: 13px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Main Chat View */
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-dark);
+    }
+
     .chat-header {
-      padding: 12px 20px; background: var(--an-sidebar); border-bottom: 1px solid var(--an-border);
-      display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
-    }
-    .chat-header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn { display: none; background: none; border: none; color: var(--an-text-muted); cursor: pointer; }
-
-    .messages-container { flex: 1; min-height: 0; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-
-    /* Message Bubbles */
-    .message {
-      max-width: 68%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.4;
-      position: relative; word-wrap: break-word; display: flex; flex-direction: column;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .message.sent { align-self: flex-end; background: var(--an-bubble-sent); color: #ffffff; border-bottom-right-radius: 2px; }
-    .message.received { align-self: flex-start; background: var(--an-bubble-recv); color: var(--an-text-main); border-bottom-left-radius: 2px; border: 1px solid var(--an-border); }
-
-    .msg-meta {
-      display: flex; align-items: center; justify-content: flex-end; gap: 4px;
-      font-size: 10px; opacity: 0.8; margin-top: 4px; align-self: flex-end;
-    }
-    .msg-check { color: var(--an-check); font-weight: bold; font-size: 11px; }
-
-    .message img, .message video { max-width: 100%; border-radius: 10px; margin-top: 6px; }
-    .message audio { width: 100%; margin-top: 6px; }
-
-    /* Chat Input Bar Fix */
-    .input-area {
-      padding: 12px 20px; background: var(--an-sidebar); display: flex; align-items: center; gap: 12px;
-      border-top: 1px solid var(--an-border); flex-shrink: 0; width: 100%;
-    }
-    .input-area input[type="text"] {
-      flex: 1; padding: 12px 18px; background: var(--an-card); border: 1px solid transparent;
-      border-radius: 12px; color: var(--an-text-main); font-size: 14px; outline: none; transition: border-color 0.2s;
-    }
-    .input-area input[type="text"]:focus { border-color: var(--an-neon-cyan); }
-    
-    .send-circle-btn {
-      width: 44px; height: 44px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border-radius: 12px;
-      border: none; color: #0b0f19; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
-      box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); transition: transform 0.2s;
-    }
-    .send-circle-btn:active { transform: scale(0.92); }
-
-    /* --- Settings Screen Overlay --- */
-    .settings-panel {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--an-sidebar); z-index: 100; display: flex; flex-direction: column;
-      transform: translateX(-100%); transition: transform 0.3s ease; overflow-y: auto;
-    }
-    .settings-panel.active { transform: translateX(0); }
-
-    .settings-header {
-      padding: 16px 20px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--an-border); flex-shrink: 0;
-    }
-    .settings-header h2 { font-size: 18px; font-weight: 700; color: var(--an-text-main); }
-
-    .profile-card {
-      display: flex; flex-direction: column; align-items: center; padding: 24px 16px; border-bottom: 1px solid var(--an-border); text-align: center; flex-shrink: 0;
-    }
-    .thought-bubble {
-      background: var(--an-card); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--an-text-muted);
-      margin-bottom: -10px; border: 1px solid var(--an-border); position: relative; z-index: 2;
-    }
-    .profile-avatar-wrapper { position: relative; margin-bottom: 12px; }
-    .profile-avatar {
-      width: 86px; height: 86px; border-radius: 50%; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-accent-purple));
-      display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff;
-    }
-    .profile-add-badge {
-      position: absolute; bottom: 2px; right: 2px; width: 24px; height: 24px; background: var(--an-neon-cyan);
-      border-radius: 50%; color: #0b0f19; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center;
-      border: 2px solid var(--an-sidebar);
-    }
-    .profile-name { font-size: 20px; font-weight: 700; color: var(--an-text-main); display: flex; align-items: center; gap: 6px; }
-    .profile-handle { font-size: 13px; color: var(--an-text-muted); margin-top: 2px; }
-
-    /* Settings List Items */
-    .settings-list { display: flex; flex-direction: column; padding: 8px 0 24px; }
-    .settings-item {
-      display: flex; align-items: center; gap: 18px; padding: 14px 20px; cursor: pointer; transition: background 0.2s;
-    }
-    .settings-item:hover { background: var(--an-card); }
-    .settings-icon { color: var(--an-text-muted); display: flex; align-items: center; }
-    .settings-icon svg { width: 22px; height: 22px; fill: currentColor; }
-    .settings-text { flex: 1; display: flex; flex-direction: column; }
-    .settings-title { font-size: 15px; font-weight: 600; color: var(--an-text-main); }
-    .settings-sub { font-size: 12px; color: var(--an-text-muted); margin-top: 2px; }
-
-    /* Theme Switch Toggle inside Settings */
-    .theme-toggle-btn {
-      background: var(--an-card); border: 1px solid var(--an-border); color: var(--an-text-main);
-      padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
     }
 
-    /* Modal Overlay */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; }
-    .modal-overlay.active { display: flex; }
-    .modal-box { background: var(--an-sidebar); width: 340px; padding: 24px; border-radius: 20px; border: 1px solid var(--an-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .modal-box h3 { font-size: 18px; margin-bottom: 14px; color: var(--an-text-main); }
-    .modal-box input { width: 100%; padding: 12px 16px; background: var(--an-card); border: 1px solid var(--an-border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; margin-bottom: 16px; }
-    .modal-box button { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border: none; border-radius: 10px; color: #0b0f19; font-weight: 700; cursor: pointer; }
+    .status-online {
+      font-size: 12px;
+      color: #10b981;
+    }
 
-    /* Mobile View Fix */
+    .chat-messages {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .msg-bubble {
+      max-width: 65%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.4;
+      position: relative;
+      word-break: break-word;
+    }
+
+    .msg-bubble.sent {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      border-bottom-right-radius: 4px;
+    }
+
+    .msg-bubble.received {
+      align-self: flex-start;
+      background: var(--bubble-other);
+      color: var(--text-main);
+      border-bottom-left-radius: 4px;
+    }
+
+    .msg-time {
+      font-size: 10px;
+      opacity: 0.7;
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    .chat-input-area {
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      background: var(--bg-dark);
+    }
+
+    .input-field {
+      flex: 1;
+      background: var(--bg-input);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 24px;
+      padding: 12px 20px;
+      color: white;
+      outline: none;
+    }
+
+    .send-btn {
+      background: var(--accent-light);
+      border: none;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .send-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #0f1322;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: var(--bg-card);
+      padding: 24px;
+      border-radius: 12px;
+      width: 320px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .modal-content input {
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: var(--bg-input);
+      color: white;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .modal-actions button {
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+    }
+
+    /* Mobile handling */
     @media (max-width: 768px) {
-      .sidebar { width: 100%; height: 100%; border-right: none; }
-      .chat-panel { display: none; width: 100%; height: 100%; }
-
+      .sidebar { width: 100%; }
+      .chat-area { display: none; width: 100%; }
       body.mobile-chat-active .sidebar { display: none; }
-      body.mobile-chat-active .chat-panel { display: flex; }
-      body.mobile-chat-active .back-btn { display: flex; }
+      body.mobile-chat-active .chat-area { display: flex; }
+      .back-btn { display: block !important; }
+    }
+
+    .back-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <!-- Splash Screen -->
-  <div id="splash-screen">
-    <div class="splash-logo">A</div>
-    <div class="splash-title">Airnode</div>
-  </div>
-
-  <!-- App Main Layout -->
   <div class="app-container">
-    
-    <!-- Left Sidebar / Chat List -->
+    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <span class="brand-title">Airnode</span>
-        <div class="header-actions">
-          <button class="icon-btn" onclick="openSettings()" title="Settings">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
-          </button>
-          <button class="icon-btn" onclick="openNewChatModal()" title="New Chat">
-            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- Search Input -->
-      <div class="search-box">
-        <div class="search-input-wrapper">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input type="text" placeholder="Search conversations..." id="searchInput" oninput="filterChats()">
-        </div>
-      </div>
-
-      <!-- Filter Pills -->
-      <div class="filters-row">
-        <button class="pill active">All</button>
-        <button class="pill">Unread</button>
-        <button class="pill">Favourites</button>
-        <button class="pill">Groups</button>
-      </div>
-
-      <!-- Active Chats List -->
-      <div class="chat-list" id="chatsListContainer"></div>
-
-      <!-- Glowing Floating Action Button (+) -->
-      <button class="fab-btn" onclick="openNewChatModal()" title="Start New Chat">
-        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-      </button>
-
-      <!-- Bottom Nav Tabs -->
-      <div class="bottom-nav">
-        <button class="nav-tab active">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-          <span>Chats</span>
-        </button>
-        <button class="nav-tab">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-          <span>Updates</span>
-        </button>
-        <button class="nav-tab">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-          <span>Channels</span>
-        </button>
-        <button class="nav-tab" onclick="openSettings()">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-          <span>Settings</span>
-        </button>
-      </div>
-
-      <!-- --- Settings Overlay Panel --- -->
-      <div class="settings-panel" id="settingsPanel">
-        <div class="settings-header">
-          <button class="icon-btn" onclick="closeSettings()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-          </button>
-          <h2>Settings</h2>
-        </div>
-
-        <div class="profile-card">
-          <div class="thought-bubble">Share a thought!</div>
-          <div class="profile-avatar-wrapper">
-            <div class="profile-avatar" id="settingsAvatar">A</div>
-            <div class="profile-add-badge">+</div>
-          </div>
-          <div class="profile-name" id="settingsName">User Name</div>
-          <div class="profile-handle" id="settingsHandle">@user_handle</div>
-        </div>
-
-        <div class="settings-list">
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v2h2v-2h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Account</div>
-              <div class="settings-sub">Security notifications, change number</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Privacy</div>
-              <div class="settings-sub">Blocked accounts, disappearing messages</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Lists</div>
-              <div class="settings-sub">Manage people and groups</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Chats</div>
-              <div class="settings-sub">Theme, wallpapers, chat history</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.21 19.55 10.56 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Appearance</div>
-              <div class="settings-sub">Chat theme, app icon, app theme</div>
-            </div>
-            <button class="theme-toggle-btn" onclick="toggleTheme(event)">
-              <span id="themeToggleLabel">🌙 Dark</span>
-            </button>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Notifications</div>
-              <div class="settings-sub">Message, group & call tones</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Storage and data</div>
-              <div class="settings-sub">Network usage, auto-download</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Accessibility</div>
-              <div class="settings-sub">Increase contrast, animation</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">App language</div>
-              <div class="settings-sub">English (device's language)</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Help and feedback</div>
-              <div class="settings-sub">Help centre, contact us, privacy policy</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9 0c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm9 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2c0-2.66-5.33-4-8-4z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Invite a friend</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-
-    <!-- Right Chat Screen -->
-    <div class="chat-panel">
-      <div class="chat-header">
-        <div class="chat-header-left">
-          <button class="back-btn" onclick="closeMobileChat()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-          </button>
-          <div class="chat-avatar" id="activeChatAvatar">?</div>
+        <div class="my-number-badge">
+          <div class="avatar-circle" id="myAvatar">--</div>
           <div>
-            <div style="font-weight: 600; font-size: 16px;" id="activeChatName">Select a contact</div>
-            <div style="font-size: 11px; color: var(--an-neon-cyan);" id="activeChatStatus">online</div>
+            <div style="font-size: 11px; color: var(--text-muted);">MY NUMBER</div>
+            <div style="font-weight: bold; font-size: 14px;" id="displayMyNumber">Loading...</div>
           </div>
+        </div>
+        <button class="new-chat-btn" onclick="openNewChatModal()">+</button>
+      </div>
+
+      <div class="recent-list" id="recentList"></div>
+    </div>
+
+    <!-- Chat Area -->
+    <div class="chat-area">
+      <div class="chat-header">
+        <button class="back-btn" onclick="closeMobileChat()">&larr;</button>
+        <div class="avatar-circle" id="activeChatAvatar">--</div>
+        <div>
+          <div style="font-weight: bold;" id="activeChatName">Select a chat</div>
+          <div class="status-online" id="chatStatus">online</div>
         </div>
       </div>
 
-      <!-- Messages Stream -->
-      <div class="messages-container" id="messagesBox"></div>
+      <div class="chat-messages" id="chatMessages"></div>
 
-      <!-- Message Input Bar -->
-      <div class="input-area">
-        <button class="icon-btn" onclick="triggerFileUpload()" id="attachBtn" disabled>
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-        </button>
-        <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)">
-
-        <input type="text" id="msgInput" placeholder="Message Airnode..." disabled onkeypress="handleKeyPress(event)">
-        
-        <button class="send-circle-btn" id="sendBtn" onclick="sendMessage()" disabled>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      <div class="chat-input-area">
+        <input type="text" class="input-field" id="msgInput" placeholder="Message Airnode..." disabled onkeypress="if(event.key==='Enter') sendMessage()">
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
       </div>
     </div>
-
   </div>
 
-  <!-- Start New Chat Modal -->
-  <div class="modal-overlay" id="newChatModal">
-    <div class="modal-box">
-      <h3>New Airnode Chat</h3>
-      <input type="text" id="newNumberInput" placeholder="Enter recipient's number (+1...)">
-      <button onclick="startNewChat()">Start Chat</button>
+  <!-- New Chat Modal -->
+  <div class="modal" id="newChatModal">
+    <div class="modal-content">
+      <h3>Start New Chat</h3>
+      <input type="text" id="newNumberInput" placeholder="Enter phone number (e.g. 18143606598)">
+      <div class="modal-actions">
+        <button onclick="closeNewChatModal()">Cancel</button>
+        <button style="background: var(--accent-light); color: #000;" onclick="startNewChat()">Chat</button>
+      </div>
     </div>
   </div>
 
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        document.getElementById('splash-screen').style.opacity = '0';
-        document.getElementById('splash-screen').style.visibility = 'hidden';
-      }, 1000);
-    });
-
     const socket = io();
 
-    let savedTheme = localStorage.getItem('airnode_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    updateThemeLabel();
-
-    function toggleTheme(e) {
-      if (e) e.stopPropagation();
-      savedTheme = savedTheme === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-      localStorage.setItem('airnode_theme', savedTheme);
-      updateThemeLabel();
-    }
-
-    function updateThemeLabel() {
-      const btnLabel = document.getElementById('themeToggleLabel');
-      if (btnLabel) {
-        btnLabel.innerText = savedTheme === 'dark' ? '🌙 Dark' : '☀️ Light';
-      }
-    }
-
     let myNumber = localStorage.getItem('airnode_my_number');
-    if (!myNumber) {
-      myNumber = `+1 (814) ${Math.floor(1000000 + Math.random() * 9000000)}`;
-      localStorage.setItem('airnode_my_number', myNumber);
+    let activeRecipient = null;
+    let recentChats = JSON.parse(localStorage.getItem('airnode_recent_chats') || '[]');
+
+    // Helper: Normalize any string down to digits only
+    function cleanNumber(num) {
+      return num ? String(num).replace(/\D/g, '') : '';
     }
 
-    document.getElementById('settingsName').innerText = myNumber;
-    document.getElementById('settingsHandle').innerText = `@${myNumber.replace(/[^0-9]/g, '')}`;
-    document.getElementById('settingsAvatar').innerText = myNumber.substring(myNumber.length - 2);
+    // Initialize Identity
+    if (!myNumber) {
+      const input = prompt("Enter your phone number to register/login:");
+      myNumber = cleanNumber(input);
+      if (myNumber) {
+        localStorage.setItem('airnode_my_number', myNumber);
+      } else {
+        location.reload();
+      }
+    } else {
+      myNumber = cleanNumber(myNumber);
+    }
 
-    function openSettings() { document.getElementById('settingsPanel').classList.add('active'); }
-    function closeSettings() { document.getElementById('settingsPanel').classList.remove('active'); }
-
-    let recentChats = JSON.parse(localStorage.getItem('airnode_recent_chats') || '[]');
-    let activeRecipient = null;
+    document.getElementById('displayMyNumber').innerText = myNumber;
+    document.getElementById('myAvatar').innerText = myNumber.slice(-2);
 
     renderChatList();
 
-    function openNewChatModal() { document.getElementById('newChatModal').classList.add('active'); }
-    function closeNewChatModal() { document.getElementById('newChatModal').classList.remove('active'); }
+    // Modal Control
+    function openNewChatModal() { document.getElementById('newChatModal').style.display = 'flex'; }
+    function closeNewChatModal() { document.getElementById('newChatModal').style.display = 'none'; }
 
     function startNewChat() {
-      const number = document.getElementById('newNumberInput').value.trim();
-      if (!number) return alert('Enter a phone number!');
-      if (number === myNumber) return alert("You can't chat with yourself!");
+      const rawInput = document.getElementById('newNumberInput').value.trim();
+      const cleaned = cleanNumber(rawInput);
 
-      addContactToRecent(number, "Tap to send a message...");
+      if (!cleaned) return alert('Enter a valid phone number!');
+      if (cleaned === myNumber) return alert("You can't chat with yourself!");
+
+      addContactToRecent(cleaned, "Tap to send a message...");
       closeNewChatModal();
-      openChat(number);
+      openChat(cleaned);
     }
 
     function addContactToRecent(number, lastMsg = '') {
-      const existing = recentChats.find(c => c.number === number);
-      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const cleanedTarget = cleanNumber(number);
+      const existing = recentChats.find(c => cleanNumber(c.number) === cleanedTarget);
+      const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       if (existing) {
         existing.lastMsg = lastMsg || existing.lastMsg;
-        existing.time = now;
+        existing.time = time;
       } else {
-        recentChats.unshift({ number, lastMsg, time: now });
+        recentChats.unshift({ number: cleanedTarget, lastMsg, time });
       }
 
       localStorage.setItem('airnode_recent_chats', JSON.stringify(recentChats));
@@ -584,27 +402,20 @@
     }
 
     function renderChatList() {
-      const container = document.getElementById('chatsListContainer');
+      const container = document.getElementById('recentList');
       container.innerHTML = '';
 
-      if (recentChats.length === 0) {
-        container.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--an-text-muted); font-size: 13px;">No active chats. Tap + to start a conversation!</div>`;
-        return;
-      }
-
       recentChats.forEach(chat => {
+        const cleanChatNum = cleanNumber(chat.number);
         const div = document.createElement('div');
-        div.className = `chat-item ${activeRecipient === chat.number ? 'active' : ''}`;
-        div.onclick = () => openChat(chat.number);
+        div.className = `recent-item ${activeRecipient === cleanChatNum ? 'active' : ''}`;
+        div.onclick = () => openChat(cleanChatNum);
 
         div.innerHTML = `
-          <div class="chat-avatar">${chat.number.substring(chat.number.length - 2)}</div>
-          <div class="chat-info">
-            <div class="chat-top-row">
-              <span class="chat-name">${chat.number}</span>
-              <span class="chat-time">${chat.time || ''}</span>
-            </div>
-            <div class="chat-last-msg">${chat.lastMsg || 'Tap to chat'}</div>
+          <div class="avatar-circle">${cleanChatNum.slice(-2)}</div>
+          <div class="recent-info">
+            <div class="recent-name">${cleanChatNum}</div>
+            <div class="recent-msg">${chat.lastMsg}</div>
           </div>
         `;
         container.appendChild(div);
@@ -612,97 +423,72 @@
     }
 
     function openChat(recipientNumber) {
-      activeRecipient = recipientNumber;
-      document.getElementById('activeChatName').innerText = recipientNumber;
-      document.getElementById('activeChatAvatar').innerText = recipientNumber.substring(recipientNumber.length - 2);
+      activeRecipient = cleanNumber(recipientNumber);
+
+      document.getElementById('activeChatName').innerText = activeRecipient;
+      document.getElementById('activeChatAvatar').innerText = activeRecipient.slice(-2);
 
       document.getElementById('msgInput').disabled = false;
       document.getElementById('sendBtn').disabled = false;
-      document.getElementById('attachBtn').disabled = false;
+      document.getElementById('chatMessages').innerHTML = '';
 
       document.body.classList.add('mobile-chat-active');
       renderChatList();
 
-      socket.emit('join_chat', { myNumber, recipientNumber: activeRecipient });
+      socket.emit('join_chat', { 
+        myNumber: myNumber, 
+        recipientNumber: activeRecipient 
+      });
     }
 
-    function closeMobileChat() { document.body.classList.remove('mobile-chat-active'); }
-
-    function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
+    function closeMobileChat() {
+      document.body.classList.remove('mobile-chat-active');
+    }
 
     function sendMessage() {
-      const text = document.getElementById('msgInput').value.trim();
+      const input = document.getElementById('msgInput');
+      const text = input.value.trim();
       if (!text || !activeRecipient) return;
 
-      socket.emit('send_private_message', { sender: myNumber, recipient: activeRecipient, message: text });
-      addContactToRecent(activeRecipient, text);
-      document.getElementById('msgInput').value = '';
+      socket.emit('send_private_message', {
+        sender: myNumber,
+        recipient: activeRecipient,
+        message: text
+      });
+
+      input.value = '';
     }
-
-    socket.on('load_history', (history) => {
-      const box = document.getElementById('messagesBox');
-      box.innerHTML = '';
-      history.forEach(msg => appendMessage(msg));
-    });
-
-    socket.on('receive_private_message', (msg) => {
-      if (msg.sender === activeRecipient || msg.sender === myNumber) {
-        appendMessage(msg);
-      }
-      addContactToRecent(msg.sender === myNumber ? msg.recipient : msg.sender, msg.message || 'Media file');
-    });
 
     function appendMessage(msg) {
-      const box = document.getElementById('messagesBox');
+      const container = document.getElementById('chatMessages');
+      const msgSender = cleanNumber(msg.sender);
+      const isSelf = msgSender === myNumber;
+
       const div = document.createElement('div');
-      const isMe = msg.sender === myNumber;
-      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      div.className = `msg-bubble ${isSelf ? 'sent' : 'received'}`;
+      div.innerHTML = `
+        <div>${msg.message}</div>
+        <div class="msg-time">${msg.time || ''}</div>
+      `;
 
-      div.className = `message ${isMe ? 'sent' : 'received'}`;
-
-      if (msg.message) {
-        const p = document.createElement('div');
-        p.innerText = msg.message;
-        div.appendChild(p);
-      }
-
-      if (msg.file) {
-        if (msg.file.type.startsWith('image/')) {
-          const img = document.createElement('img'); img.src = msg.file.data; div.appendChild(img);
-        } else if (msg.file.type.startsWith('video/')) {
-          const video = document.createElement('video'); video.src = msg.file.data; video.controls = true; div.appendChild(video);
-        } else if (msg.file.type.startsWith('audio/')) {
-          const audio = document.createElement('audio'); audio.src = msg.file.data; audio.controls = true; div.appendChild(audio);
-        }
-      }
-
-      const meta = document.createElement('div');
-      meta.className = 'msg-meta';
-      meta.innerHTML = `${timeStr} ${isMe ? '<span class="msg-check">✓✓</span>' : ''}`;
-      div.appendChild(meta);
-
-      box.appendChild(div);
-      box.scrollTop = box.scrollHeight;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
     }
 
-    function triggerFileUpload() { document.getElementById('fileInput').click(); }
-    
-    function sendFile(e) {
-      const file = e.target.files[0];
-      if (!file || !activeRecipient) return;
+    // Handle Incoming Messages
+    socket.on('receive_private_message', (msg) => {
+      const msgSender = cleanNumber(msg.sender);
+      const msgRecipient = cleanNumber(msg.recipient);
 
-      const reader = new FileReader();
-      reader.onload = function(evt) {
-        socket.emit('send_private_message', {
-          sender: myNumber,
-          recipient: activeRecipient,
-          message: '',
-          file: { data: evt.target.result, name: file.name, type: file.type }
-        });
-        addContactToRecent(activeRecipient, '📷 Media Attachment');
-      };
-      reader.readAsDataURL(file);
-    }
+      // Render if relevant to currently opened chat window
+      if (msgSender === activeRecipient || (msgSender === myNumber && msgRecipient === activeRecipient)) {
+        appendMessage(msg);
+      }
+
+      // Update sidebar
+      const otherParty = msgSender === myNumber ? msgRecipient : msgSender;
+      addContactToRecent(otherParty, msg.message);
+    });
   </script>
 </body>
 </html>
