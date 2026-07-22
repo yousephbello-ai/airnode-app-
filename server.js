@@ -9,50 +9,55 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
-const JWT_SECRET = process.env.JWT_SECRET || 'airnode_secret_key_123';
+// Enable serving static files from a public folder
+app.use(express.static('public'));
+
+// 1. Database Connection
 const MONGO_URI = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET || 'secret_key_123';
 
-// 1. Connect to MongoDB Cloud
 mongoose.connect(MONGO_URI)
-  .then(() => console.log('Connected to MongoDB Cloud!'))
-  .catch(err => console.error('DB Connection Error:', err));
+  .then(() => console.log('MongoDB Connected Successfully'))
+  .catch((err) => console.error('MongoDB Connection Error:', err));
 
-// 2. Database Schemas
+// 2. Database Schemas & Models
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true }
 });
 
 const MessageSchema = new mongoose.Schema({
-  sender: String,
-  message: String,
+  sender: { type: String, required: true },
+  message: { type: String, required: true },
   timestamp: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', UserSchema);
 const Message = mongoose.model('Message', MessageSchema);
 
-// 3. User Registration Endpoint
+// 3. Home Status Check Route
+app.get('/', (req, res) => {
+  res.send('Airnode API Server is up and running! 🚀');
+});
+
+// 4. User Registration Endpoint
 app.post('/api/register', async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password required' });
-    }
+    const existingUser = await User.findOne({ username });
+    if (existingUser) return res.status(400).json({ error: 'Username already taken' });
 
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
 
-    res.json({ success: true, message: 'User registered successfully!' });
+    res.json({ success: true, message: 'User registered successfully' });
   } catch (err) {
-    res.status(400).json({ error: 'Username already taken or invalid' });
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
-// 4. User Login Endpoint
+// 5. User Login Endpoint
 app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -70,7 +75,7 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// 5. Socket.io Real-Time Chat Engine
+// 6. Socket.io Real-Time Chat Engine
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: '*' } });
 
@@ -87,6 +92,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// 6. Bind to Dynamic Port for Render
+// 7. Bind to Dynamic Port for Render
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
