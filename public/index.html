@@ -503,7 +503,7 @@
   </div>
 
   <script>
-    // Universal Identifier Sanitizer (strips '+', spaces, and symbols so '+18146916727' equals '18146916727')
+    // Universal Identifier Sanitizer (strips '+', spaces, and symbols)
     function cleanIdentifier(id) {
       if (!id) return '';
       return String(id).toLowerCase().trim().replace(/[^a-z0-9]/g, '');
@@ -837,7 +837,9 @@
     function openChat(recipientNumber) {
       if (!currentUser) return openAuthModal(false);
 
-      activeRecipient = recipientNumber;
+      // Clean active recipient state
+      activeRecipient = cleanIdentifier(recipientNumber);
+      
       document.getElementById('activeChatName').innerText = recipientNumber;
       document.getElementById('activeChatAvatar').innerText = recipientNumber.substring(0, 2).toUpperCase();
 
@@ -850,7 +852,7 @@
 
       socket.emit('join_chat', { 
         myNumber: cleanIdentifier(currentUser.identifier), 
-        recipientNumber: cleanIdentifier(activeRecipient) 
+        recipientNumber: activeRecipient 
       });
     }
 
@@ -861,13 +863,23 @@
       const text = document.getElementById('msgInput').value.trim();
       if (!text || !activeRecipient || !currentUser) return;
 
-      socket.emit('send_private_message', { 
-        sender: cleanIdentifier(currentUser.identifier), 
-        recipient: cleanIdentifier(activeRecipient), 
-        message: text 
-      });
+      const myId = cleanIdentifier(currentUser.identifier);
 
+      const msgObj = {
+        sender: myId,
+        recipient: activeRecipient,
+        message: text
+      };
+
+      // 1. Send via Socket
+      socket.emit('send_private_message', msgObj);
+
+      // 2. Optimistically append message to current active chat window
+      appendMessage(msgObj);
+
+      // 3. Update preview state in chat list
       addContactToRecent(activeRecipient, text);
+
       document.getElementById('msgInput').value = '';
     }
 
@@ -885,17 +897,19 @@
       const currentActive = cleanIdentifier(activeRecipient);
       const currentMe = cleanIdentifier(currentUser.identifier);
 
-      if ((msgSender === currentActive && msgRecipient === currentMe) || 
-          (msgSender === currentMe && msgRecipient === currentActive)) {
+      // Render in open window only if incoming message belongs to this active pair
+      if (msgSender === currentActive && msgRecipient === currentMe) {
         appendMessage(msg);
       }
 
-      const targetNumber = msgSender === currentMe ? msg.recipient : msg.sender;
+      const targetNumber = msgSender === currentMe ? msgRecipient : msgSender;
       addContactToRecent(targetNumber, msg.message || 'Media File');
     });
 
     function appendMessage(msg) {
       const box = document.getElementById('messagesBox');
+      if (!box) return;
+
       const div = document.createElement('div');
       const isMe = cleanIdentifier(msg.sender) === cleanIdentifier(currentUser ? currentUser.identifier : '');
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -947,14 +961,19 @@
       const file = e.target.files[0];
       if (!file || !activeRecipient || !currentUser) return;
 
+      const myId = cleanIdentifier(currentUser.identifier);
+
       const reader = new FileReader();
       reader.onload = function(evt) {
-        socket.emit('send_private_message', {
-          sender: cleanIdentifier(currentUser.identifier),
-          recipient: cleanIdentifier(activeRecipient),
+        const msgObj = {
+          sender: myId,
+          recipient: activeRecipient,
           message: '',
           file: { data: evt.target.result, name: file.name, type: file.type }
-        });
+        };
+
+        socket.emit('send_private_message', msgObj);
+        appendMessage(msgObj);
         addContactToRecent(activeRecipient, '📷 Attachment');
       };
       reader.readAsDataURL(file);
