@@ -46,7 +46,7 @@
     html, body { height: 100%; width: 100%; overflow: hidden; background: var(--an-bg-main); color: var(--an-text-main); }
     body { display: flex; transition: background 0.3s, color 0.3s; }
 
-    /* --- Splash Screen --- */
+    /* Splash Screen */
     #splash-screen {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
       background-color: var(--an-bg-main); display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -58,10 +58,10 @@
     }
     .splash-title { margin-top: 18px; font-size: 22px; font-weight: 700; color: var(--an-text-main); letter-spacing: 1px; }
 
-    /* --- Main App Layout --- */
+    /* App Layout */
     .app-container { display: flex; width: 100vw; height: 100vh; height: 100dvh; position: relative; overflow: hidden; }
 
-    /* Left Sidebar / Chats Screen */
+    /* Sidebar */
     .sidebar {
       width: 380px; background: var(--an-sidebar); border-right: 1px solid var(--an-border);
       display: flex; flex-direction: column; flex-shrink: 0; position: relative; transition: background 0.3s; height: 100%;
@@ -81,7 +81,7 @@
     .icon-btn:hover { color: var(--an-neon-cyan); }
     .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
-    /* Search Bar */
+    /* Search */
     .search-box { padding: 8px 16px; flex-shrink: 0; }
     .search-input-wrapper {
       display: flex; align-items: center; gap: 10px; background: var(--an-card);
@@ -93,7 +93,7 @@
       background: none; border: none; outline: none; color: var(--an-text-main); font-size: 14px; width: 100%;
     }
 
-    /* Filters Pill Row */
+    /* Filters */
     .filters-row { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; flex-shrink: 0; }
     .pill {
       background: var(--an-card); color: var(--an-text-muted); font-size: 13px; font-weight: 600;
@@ -101,7 +101,7 @@
     }
     .pill.active, .pill:hover { background: rgba(0, 242, 254, 0.15); color: var(--an-neon-cyan); border-color: rgba(0, 242, 254, 0.3); }
 
-    /* Chat List Container */
+    /* Chat List */
     .chat-list { flex: 1; overflow-y: auto; padding: 6px 0; }
     .chat-item {
       display: flex; align-items: center; gap: 14px; padding: 12px 18px; cursor: pointer;
@@ -121,7 +121,7 @@
     .chat-time { font-size: 11px; color: var(--an-text-muted); }
     .chat-last-msg { font-size: 13px; color: var(--an-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
-    /* Floating Action Button (+) */
+    /* FAB */
     .fab-btn {
       position: absolute; bottom: 70px; right: 20px; width: 52px; height: 52px;
       background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border-radius: 16px; border: none; color: #0b0f19;
@@ -131,7 +131,7 @@
     .fab-btn:active { transform: scale(0.92); }
     .fab-btn svg { width: 26px; height: 26px; fill: #0b0f19; }
 
-    /* Bottom Navigation Bar */
+    /* Bottom Nav */
     .bottom-nav {
       display: flex; justify-content: space-around; align-items: center;
       padding: 10px 0 8px; background: var(--an-sidebar); border-top: 1px solid var(--an-border); flex-shrink: 0;
@@ -139,7 +139,7 @@
     .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--an-text-muted); font-size: 11px; font-weight: 600; cursor: pointer; border: none; background: none; }
     .nav-tab.active { color: var(--an-neon-cyan); }
 
-    /* --- Right Chat Panel --- */
+    /* Chat Panel */
     .chat-panel {
       flex: 1; display: flex; flex-direction: column; height: 100%; min-height: 0; background: var(--an-bg-main);
       background-image: radial-gradient(rgba(0, 242, 254, 0.05) 1px, transparent 0); background-size: 28px 28px;
@@ -171,7 +171,7 @@
     .message img, .message video { max-width: 100%; border-radius: 10px; margin-top: 6px; }
     .message audio { width: 100%; margin-top: 6px; }
 
-    /* Chat Input Bar Fix */
+    /* Input Area */
     .input-area {
       padding: 12px 20px; background: var(--an-sidebar); display: flex; align-items: center; gap: 12px;
       border-top: 1px solid var(--an-border); flex-shrink: 0; width: 100%;
@@ -189,7 +189,7 @@
     }
     .send-circle-btn:active { transform: scale(0.92); }
 
-    /* --- Settings Screen Overlay --- */
+    /* Settings Panel */
     .settings-panel {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--an-sidebar); z-index: 100; display: flex; flex-direction: column;
@@ -222,7 +222,7 @@
     .profile-name { font-size: 20px; font-weight: 700; color: var(--an-text-main); display: flex; align-items: center; gap: 6px; }
     .profile-handle { font-size: 13px; color: var(--an-text-muted); margin-top: 2px; }
 
-    /* Settings List Items */
+    /* Settings List */
     .settings-list { display: flex; flex-direction: column; padding: 8px 0 24px; }
     .settings-item {
       display: flex; align-items: center; gap: 18px; padding: 14px 20px; cursor: pointer; transition: background 0.2s;
@@ -234,7 +234,6 @@
     .settings-title { font-size: 15px; font-weight: 600; color: var(--an-text-main); }
     .settings-sub { font-size: 12px; color: var(--an-text-muted); margin-top: 2px; }
 
-    /* Theme Switch Toggle inside Settings */
     .theme-toggle-btn {
       background: var(--an-card); border: 1px solid var(--an-border); color: var(--an-text-main);
       padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
@@ -248,7 +247,7 @@
     .modal-box input { width: 100%; padding: 12px 16px; background: var(--an-card); border: 1px solid var(--an-border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; margin-bottom: 16px; }
     .modal-box button { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border: none; border-radius: 10px; color: #0b0f19; font-weight: 700; cursor: pointer; }
 
-    /* Mobile View Fix */
+    /* Responsive */
     @media (max-width: 768px) {
       .sidebar { width: 100%; height: 100%; border-right: none; }
       .chat-panel { display: none; width: 100%; height: 100%; }
@@ -267,10 +266,10 @@
     <div class="splash-title">Airnode</div>
   </div>
 
-  <!-- App Main Layout -->
+  <!-- App Container -->
   <div class="app-container">
     
-    <!-- Left Sidebar / Chat List -->
+    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-header">
         <span class="brand-title">Airnode</span>
@@ -300,15 +299,15 @@
         <button class="pill">Groups</button>
       </div>
 
-      <!-- Active Chats List -->
+      <!-- Chat List -->
       <div class="chat-list" id="chatsListContainer"></div>
 
-      <!-- Glowing Floating Action Button (+) -->
+      <!-- FAB -->
       <button class="fab-btn" onclick="openNewChatModal()" title="Start New Chat">
         <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       </button>
 
-      <!-- Bottom Nav Tabs -->
+      <!-- Bottom Nav -->
       <div class="bottom-nav">
         <button class="nav-tab active">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
@@ -328,7 +327,7 @@
         </button>
       </div>
 
-      <!-- --- Settings Overlay Panel --- -->
+      <!-- Settings Overlay -->
       <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
           <button class="icon-btn" onclick="closeSettings()">
@@ -370,16 +369,6 @@
 
           <div class="settings-item">
             <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Lists</div>
-              <div class="settings-sub">Manage people and groups</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
               <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
             </div>
             <div class="settings-text">
@@ -399,65 +388,6 @@
             <button class="theme-toggle-btn" onclick="toggleTheme(event)">
               <span id="themeToggleLabel">🌙 Dark</span>
             </button>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Notifications</div>
-              <div class="settings-sub">Message, group & call tones</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Storage and data</div>
-              <div class="settings-sub">Network usage, auto-download</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Accessibility</div>
-              <div class="settings-sub">Increase contrast, animation</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">App language</div>
-              <div class="settings-sub">English (device's language)</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Help and feedback</div>
-              <div class="settings-sub">Help centre, contact us, privacy policy</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9 0c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm9 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2c0-2.66-5.33-4-8-4z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Invite a friend</div>
-            </div>
           </div>
         </div>
       </div>
@@ -482,7 +412,7 @@
       <!-- Messages Stream -->
       <div class="messages-container" id="messagesBox"></div>
 
-      <!-- Message Input Bar -->
+      <!-- Input Bar -->
       <div class="input-area">
         <button class="icon-btn" onclick="triggerFileUpload()" id="attachBtn" disabled>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
@@ -499,7 +429,7 @@
 
   </div>
 
-  <!-- Start New Chat Modal -->
+  <!-- New Chat Modal -->
   <div class="modal-overlay" id="newChatModal">
     <div class="modal-box">
       <h3>New Airnode Chat</h3>
@@ -509,20 +439,22 @@
   </div>
 
   <script>
-    // Strips non-numeric characters so routing & matching remain perfectly consistent
+    // Sanitizes phone numbers for socket routing
     function cleanNumber(num) {
-      return num ? String(num).replace(/\D/g, '') : '';
+      return num ? String(num).replace(/[^0-9+]/g, '') : '';
     }
 
+    // Hide Splash Screen
     window.addEventListener('load', () => {
       setTimeout(() => {
         document.getElementById('splash-screen').style.opacity = '0';
         document.getElementById('splash-screen').style.visibility = 'hidden';
-      }, 1000);
+      }, 800);
     });
 
     const socket = io();
 
+    // Theme Setup
     let savedTheme = localStorage.getItem('airnode_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeLabel();
@@ -542,6 +474,7 @@
       }
     }
 
+    // Assign / retrieve persistent user identity
     let myNumber = localStorage.getItem('airnode_my_number');
     if (!myNumber) {
       myNumber = `+1 (814) ${Math.floor(1000000 + Math.random() * 9000000)}`;
@@ -554,6 +487,12 @@
 
     function openSettings() { document.getElementById('settingsPanel').classList.add('active'); }
     function closeSettings() { document.getElementById('settingsPanel').classList.remove('active'); }
+
+    // Register user with backend on Socket connection
+    socket.on('connect', () => {
+      console.log('🔌 Connected to server');
+      socket.emit('register_user', cleanNumber(myNumber));
+    });
 
     let recentChats = JSON.parse(localStorage.getItem('airnode_recent_chats') || '[]');
     let activeRecipient = null;
@@ -628,61 +567,80 @@
 
       document.body.classList.add('mobile-chat-active');
       renderChatList();
-
-      socket.emit('join_chat', { 
-        myNumber: cleanNumber(myNumber), 
-        recipientNumber: cleanNumber(activeRecipient) 
-      });
     }
 
     function closeMobileChat() { document.body.classList.remove('mobile-chat-active'); }
 
     function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
 
+    // Send Message Handler (Starts with Single Tick ✓)
     function sendMessage() {
       const text = document.getElementById('msgInput').value.trim();
       if (!text || !activeRecipient) return;
 
-      socket.emit('send_private_message', { 
-        sender: cleanNumber(myNumber), 
-        recipient: cleanNumber(activeRecipient), 
-        message: text 
-      });
+      const messageId = `msg_${Date.now()}`;
+      const payload = {
+        messageId,
+        senderId: cleanNumber(myNumber),
+        recipientId: cleanNumber(activeRecipient),
+        text
+      };
 
+      // Append locally with Single Tick ✓
+      appendMessage({ ...payload, isMe: true, status: 'sent' });
       addContactToRecent(activeRecipient, text);
       document.getElementById('msgInput').value = '';
+
+      // Emit to backend socket
+      socket.emit('send_message', payload, (res) => {
+        if (!res || !res.success) {
+          const tickEl = document.getElementById(`tick-${messageId}`);
+          if (tickEl) tickEl.innerText = '❌';
+        }
+      });
     }
 
-    socket.on('load_history', (history) => {
-      const box = document.getElementById('messagesBox');
-      box.innerHTML = '';
-      history.forEach(msg => appendMessage(msg));
-    });
-
-    socket.on('receive_private_message', (msg) => {
-      const msgSender = cleanNumber(msg.sender);
+    // Listen for incoming messages & send ACK back to server
+    socket.on('receive_message', (msgPayload, ackCallback) => {
+      const msgSender = cleanNumber(msgPayload.senderId);
       const currentActive = cleanNumber(activeRecipient);
-      const currentMe = cleanNumber(myNumber);
 
-      if (msgSender === currentActive || msgSender === currentMe) {
-        appendMessage(msg);
+      // Render on screen if chatting with sender
+      if (msgSender === currentActive) {
+        appendMessage({ ...msgPayload, message: msgPayload.text, isMe: false });
       }
 
-      const targetNumber = msgSender === currentMe ? msg.recipient : msg.sender;
-      addContactToRecent(targetNumber, msg.message || 'Media file');
+      addContactToRecent(msgPayload.senderId, msgPayload.text || 'Attachment');
+
+      // Send ACK back so sender gets Double Ticks (✓✓)
+      if (typeof ackCallback === 'function') {
+        ackCallback({ received: true });
+      }
+    });
+
+    // Update status from Single Tick (✓) to Double Ticks (✓✓)
+    socket.on('message_status_update', ({ messageId, status }) => {
+      if (status === 'delivered') {
+        const tickEl = document.getElementById(`tick-${messageId}`);
+        if (tickEl) {
+          tickEl.innerText = '✓✓';
+        }
+      }
     });
 
     function appendMessage(msg) {
       const box = document.getElementById('messagesBox');
       const div = document.createElement('div');
-      const isMe = cleanNumber(msg.sender) === cleanNumber(myNumber);
+      const isMe = msg.isMe !== undefined ? msg.isMe : (cleanNumber(msg.senderId) === cleanNumber(myNumber));
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       div.className = `message ${isMe ? 'sent' : 'received'}`;
+      if (msg.messageId) div.id = msg.messageId;
 
-      if (msg.message) {
+      const textContent = msg.text || msg.message;
+      if (textContent) {
         const p = document.createElement('div');
-        p.innerText = msg.message;
+        p.innerText = textContent;
         div.appendChild(p);
       }
 
@@ -698,7 +656,8 @@
 
       const meta = document.createElement('div');
       meta.className = 'msg-meta';
-      meta.innerHTML = `${timeStr} ${isMe ? '<span class="msg-check">✓✓</span>' : ''}`;
+      const tickSymbol = msg.status === 'delivered' ? '✓✓' : '✓';
+      meta.innerHTML = `${timeStr} ${isMe ? `<span class="msg-check" id="tick-${msg.messageId || ''}">${tickSymbol}</span>` : ''}`;
       div.appendChild(meta);
 
       box.appendChild(div);
@@ -713,13 +672,19 @@
 
       const reader = new FileReader();
       reader.onload = function(evt) {
-        socket.emit('send_private_message', {
-          sender: cleanNumber(myNumber),
-          recipient: cleanNumber(activeRecipient),
-          message: '',
+        const messageId = `msg_${Date.now()}`;
+        const payload = {
+          messageId,
+          senderId: cleanNumber(myNumber),
+          recipientId: cleanNumber(activeRecipient),
+          text: '',
           file: { data: evt.target.result, name: file.name, type: file.type }
-        });
-        addContactToRecent(activeRecipient, '📷 Media Attachment');
+        };
+
+        appendMessage({ ...payload, isMe: true, status: 'sent' });
+        addContactToRecent(activeRecipient, '📷 Attachment');
+
+        socket.emit('send_message', payload);
       };
       reader.readAsDataURL(file);
     }
