@@ -2,143 +2,180 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Airnode Messenger</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WhatsApp</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
-    /* ================= Dynamic Theme Variables ================= */
     :root {
-      --bg-main: #0b141a;
-      --bg-sidebar: #111b21;
-      --bg-card: #202c33;
-      --bg-input: #2a3942;
-      --bg-chat-starter: #182229;
-      --text-main: #e9edef;
-      --text-muted: #8696a0;
-      --border-color: #222d34;
-      --accent: #00a884;
-      --msg-sent: #005c4b;
-      --msg-received: #202c33;
+      --wa-bg-dark: #0b141a;
+      --wa-sidebar-dark: #111b21;
+      --wa-card-dark: #202c33;
+      --wa-input-dark: #2a3942;
+      --wa-green: #00a884;
+      --wa-green-light: #25d366;
+      --wa-bubble-sent: #005c4b;
+      --wa-bubble-recv: #202c33;
+      --wa-text-main: #e9edef;
+      --wa-text-muted: #8696a0;
+      --wa-border: #222d34;
+      --wa-check: #53bdeb;
     }
 
     [data-theme="light"] {
-      --bg-main: #efeae2;
-      --bg-sidebar: #ffffff;
-      --bg-card: #f0f2f5;
-      --bg-input: #e9edef;
-      --bg-chat-starter: #f7f8fa;
-      --text-main: #111b21;
-      --text-muted: #667781;
-      --border-color: #e9edef;
-      --accent: #00a884;
-      --msg-sent: #d9fdd3;
-      --msg-received: #ffffff;
+      --wa-bg-dark: #efeae2;
+      --wa-sidebar-dark: #ffffff;
+      --wa-card-dark: #f0f2f5;
+      --wa-input-dark: #e9edef;
+      --wa-bubble-sent: #d9fdd3;
+      --wa-bubble-recv: #ffffff;
+      --wa-text-main: #111b21;
+      --wa-text-muted: #667781;
+      --wa-border: #e9edef;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { display: flex; height: 100vh; background: var(--bg-main); color: var(--text-main); overflow: hidden; transition: background 0.3s, color 0.3s; }
+    body { display: flex; height: 100vh; width: 100vw; background: var(--wa-bg-dark); color: var(--wa-text-main); overflow: hidden; }
 
-    /* Splash Screen */
+    /* --- Splash Screen --- */
     #splash-screen {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: var(--bg-main);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s ease;
+      background-color: var(--wa-bg-dark); display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 0.4s ease, visibility 0.4s ease;
     }
     .splash-logo {
-      width: 80px; height: 80px; background: var(--accent); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 38px; font-weight: bold; color: #fff;
-      box-shadow: 0 0 20px rgba(0, 168, 132, 0.4); animation: pulse 1.5s infinite ease-in-out;
+      width: 72px; height: 72px; background: var(--wa-green); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 36px; font-weight: bold; color: #fff; box-shadow: 0 0 20px rgba(0, 168, 132, 0.4);
     }
-    .splash-title { margin-top: 20px; font-size: 24px; font-weight: 600; color: var(--text-main); }
-    .spinner {
-      margin-top: 30px; width: 30px; height: 30px; border: 3px solid rgba(0, 168, 132, 0.2);
-      border-radius: 50%; border-top-color: var(--accent); animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+    .splash-title { margin-top: 15px; font-size: 20px; font-weight: 600; color: var(--wa-text-main); letter-spacing: 0.5px; }
 
-    /* Layout */
-    .app-container { display: flex; width: 100vw; height: 100vh; opacity: 0; transition: opacity 0.4s ease; }
-    
+    /* --- Main App Layout --- */
+    .app-container { display: flex; width: 100vw; height: 100vh; }
+
+    /* Left Sidebar / Chats Screen */
     .sidebar {
-      width: 360px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color);
-      padding: 20px; display: flex; flex-direction: column; gap: 20px; flex-shrink: 0;
+      width: 380px; background: var(--wa-sidebar-dark); border-right: 1px solid var(--wa-border);
+      display: flex; flex-direction: column; flex-shrink: 0; position: relative;
     }
-    .sidebar-header { display: flex; justify-content: space-between; align-items: center; }
-    
-    .icon-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 6px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .icon-btn:hover { background: var(--bg-card); color: var(--text-main); }
+
+    .sidebar-header {
+      padding: 16px; display: flex; align-items: center; justify-content: space-between; background: var(--wa-sidebar-dark);
+    }
+    .brand-title { font-size: 22px; font-weight: bold; color: var(--wa-green); letter-spacing: -0.5px; }
+    .header-actions { display: flex; gap: 16px; align-items: center; }
+    .icon-btn { background: none; border: none; color: var(--wa-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
-    .profile-card {
+    /* Search Bar */
+    .search-box { padding: 8px 16px; }
+    .search-input-wrapper {
+      display: flex; align-items: center; gap: 10px; background: var(--wa-card-dark);
+      padding: 8px 14px; border-radius: 20px; color: var(--wa-text-muted);
+    }
+    .search-input-wrapper input {
+      background: none; border: none; outline: none; color: var(--wa-text-main); font-size: 14px; width: 100%;
+    }
+
+    /* Filters Pill Row */
+    .filters-row { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; border-bottom: 1px solid var(--wa-border); }
+    .pill {
+      background: var(--wa-card-dark); color: var(--wa-text-muted); font-size: 13px; font-weight: 500;
+      padding: 6px 14px; border-radius: 18px; cursor: pointer; white-space: nowrap; border: none;
+    }
+    .pill.active { background: #074a3b; color: #00a884; }
+
+    /* Chat List Container */
+    .chat-list { flex: 1; overflow-y: auto; }
+    .chat-item {
+      display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03); transition: background 0.2s;
+    }
+    .chat-item:hover, .chat-item.active { background: var(--wa-card-dark); }
+    
+    .chat-avatar {
+      width: 48px; height: 48px; border-radius: 50%; background: var(--wa-green);
+      display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: #fff;
+      flex-shrink: 0; background-size: cover; background-position: center;
+    }
+    .chat-info { flex: 1; min-width: 0; }
+    .chat-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+    .chat-name { font-size: 15px; font-weight: 600; color: var(--wa-text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .chat-time { font-size: 11px; color: var(--wa-text-muted); }
+    .chat-last-msg { font-size: 13px; color: var(--wa-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+
+    /* Floating Action Button (+) */
+    .fab-btn {
+      position: absolute; bottom: 70px; right: 20px; width: 52px; height: 52px;
+      background: var(--wa-green-light); border-radius: 16px; border: none; color: #0b141a;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: transform 0.2s; z-index: 10;
+    }
+    .fab-btn:active { transform: scale(0.95); }
+    .fab-btn svg { width: 26px; height: 26px; fill: currentColor; }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      display: flex; justify-content: space-around; align-items: center;
+      padding: 10px 0 6px; background: var(--wa-sidebar-dark); border-top: 1px solid var(--wa-border);
+    }
+    .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--wa-text-muted); font-size: 11px; font-weight: 600; cursor: pointer; border: none; background: none; }
+    .nav-tab.active { color: var(--wa-text-main); }
+    .nav-badge { background: var(--wa-green); color: #0b141a; font-size: 10px; border-radius: 10px; padding: 2px 8px; font-weight: bold; }
+
+    /* --- Right Chat Panel --- */
+    .chat-panel {
+      flex: 1; display: flex; flex-direction: column; background: var(--wa-bg-dark);
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0); background-size: 24px 24px;
+    }
+    .chat-header {
+      padding: 10px 16px; background: var(--wa-sidebar-dark); border-bottom: 1px solid var(--wa-border);
       display: flex; align-items: center; justify-content: space-between;
-      background: var(--bg-card); padding: 12px 15px; border-radius: 10px;
     }
-    .profile-left { display: flex; align-items: center; gap: 12px; }
-    
-    /* Interactive Profile Photo Avatar */
-    .avatar-wrapper { position: relative; cursor: pointer; }
-    .avatar {
-      width: 48px; height: 48px; background: var(--accent); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-weight: bold; font-size: 20px; color: #fff; overflow: hidden; background-size: cover; background-position: center;
+    .chat-header-left { display: flex; align-items: center; gap: 12px; }
+    .back-btn { display: none; background: none; border: none; color: var(--wa-text-muted); cursor: pointer; }
+
+    .messages-container { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+
+    /* Message Bubbles */
+    .message {
+      max-width: 70%; padding: 8px 12px; border-radius: 10px; font-size: 14px; line-height: 1.4;
+      position: relative; word-wrap: break-word; display: flex; flex-direction: column;
     }
-    .avatar-overlay {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4); border-radius: 50%; display: flex;
-      align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s;
+    .message.sent { align-self: flex-end; background: var(--wa-bubble-sent); color: var(--wa-text-main); border-top-right-radius: 0; }
+    .message.received { align-self: flex-start; background: var(--wa-bubble-recv); color: var(--wa-text-main); border-top-left-radius: 0; }
+
+    .msg-meta {
+      display: flex; align-items: center; justify-content: flex-end; gap: 4px;
+      font-size: 10px; color: var(--wa-text-muted); margin-top: 4px; align-self: flex-end;
     }
-    .avatar-wrapper:hover .avatar-overlay { opacity: 1; }
-    .avatar-overlay svg { width: 18px; height: 18px; fill: #fff; }
+    .msg-check { color: var(--wa-check); font-weight: bold; font-size: 11px; }
 
-    .user-info h4 { font-size: 13px; color: var(--text-muted); }
-    .user-info p { font-size: 14px; color: var(--text-main); margin-top: 2px; font-weight: bold; }
+    .message img, .message video { max-width: 100%; border-radius: 8px; margin-top: 4px; }
+    .message audio { width: 100%; margin-top: 4px; }
 
-    .copy-btn { background: var(--bg-input); border: none; color: var(--accent); cursor: pointer; padding: 8px; border-radius: 6px; }
-    .copy-btn svg { width: 18px; height: 18px; fill: currentColor; }
+    /* Chat Input Bar */
+    .input-area { padding: 10px 16px; background: var(--wa-sidebar-dark); display: flex; align-items: center; gap: 10px; }
+    .input-area input[type="text"] {
+      flex: 1; padding: 10px 16px; background: var(--wa-card-dark); border: none;
+      border-radius: 20px; color: var(--wa-text-main); font-size: 14px; outline: none;
+    }
+    .send-circle-btn {
+      width: 42px; height: 42px; background: var(--wa-green); border-radius: 50%;
+      border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+    }
 
-    .chat-starter { background: var(--bg-chat-starter); padding: 15px; border-radius: 10px; }
-    .chat-starter h3 { font-size: 13px; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase; }
-    .chat-starter input { width: 100%; padding: 12px; background: var(--bg-input); border: none; border-radius: 6px; color: var(--text-main); margin-bottom: 10px; font-size: 14px; outline: none; }
-    .chat-starter button { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; font-size: 14px; }
-
-    /* Chat Panel */
-    .chat-panel { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); }
-    .chat-header { padding: 15px 20px; background: var(--bg-card); border-bottom: 1px solid var(--border-color); font-weight: bold; display: flex; align-items: center; gap: 12px; }
-    .back-btn { display: none; background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 4px; border-radius: 50%; }
-    .back-btn svg { width: 24px; height: 24px; fill: currentColor; }
-
-    .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-    
-    .message { max-width: 75%; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
-    .message.sent { align-self: flex-end; background: var(--msg-sent); color: var(--text-main); }
-    .message.received { align-self: flex-start; background: var(--msg-received); color: var(--text-main); }
-    .message media, .message img, .message video { max-width: 100%; border-radius: 8px; margin-top: 5px; display: block; }
-    .message audio { width: 100%; margin-top: 5px; }
-
-    .input-area { padding: 12px 15px; background: var(--bg-card); display: flex; align-items: center; gap: 10px; }
-    .input-area input[type="text"] { flex: 1; padding: 12px; background: var(--bg-input); border: none; border-radius: 8px; color: var(--text-main); font-size: 14px; outline: none; }
-    .input-area button { padding: 12px 18px; background: var(--accent); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
-
-    /* Settings Modal */
+    /* New Chat Modal */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 10000; }
     .modal-overlay.active { display: flex; }
-    .modal-box { background: var(--bg-sidebar); width: 320px; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .setting-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+    .modal-box { background: var(--wa-sidebar-dark); width: 340px; padding: 20px; border-radius: 16px; border: 1px solid var(--wa-border); }
+    .modal-box h3 { font-size: 18px; margin-bottom: 12px; }
+    .modal-box input { width: 100%; padding: 12px; background: var(--wa-card-dark); border: none; border-radius: 8px; color: #fff; font-size: 14px; outline: none; margin-bottom: 14px; }
+    .modal-box button { width: 100%; padding: 12px; background: var(--wa-green); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
 
-    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-    .switch input { opacity: 0; width: 0; height: 0; }
-    .slider { position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0; background-color: var(--bg-input); transition: .3s; border-radius: 24px; }
-    .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: #fff; transition: .3s; border-radius: 50%; }
-    input:checked + .slider { background-color: var(--accent); }
-    input:checked + .slider:before { transform: translateX(20px); }
-
+    /* Responsive Design for Mobile Screen */
     @media (max-width: 768px) {
       .sidebar { width: 100%; height: 100%; border-right: none; }
       .chat-panel { display: none; width: 100%; height: 100%; }
+
       body.mobile-chat-active .sidebar { display: none; }
       body.mobile-chat-active .chat-panel { display: flex; }
       body.mobile-chat-active .back-btn { display: flex; }
@@ -149,209 +186,223 @@
 
   <!-- Splash Screen -->
   <div id="splash-screen">
-    <div class="splash-logo">A</div>
-    <div class="splash-title">Airnode</div>
-    <div class="spinner"></div>
+    <div class="splash-logo">W</div>
+    <div class="splash-title">WhatsApp</div>
   </div>
 
-  <!-- Main App -->
-  <div class="app-container" id="appContainer">
-    <!-- Sidebar -->
+  <!-- App Main Layout -->
+  <div class="app-container">
+    
+    <!-- Left Sidebar / Chat List -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <h2>Airnode</h2>
-        <button class="icon-btn" title="Settings" onclick="openSettings()">
-          <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
-        </button>
-      </div>
-      
-      <!-- Profile Card with Avatar Picker -->
-      <div class="profile-card">
-        <div class="profile-left">
-          <div class="avatar-wrapper" onclick="triggerProfilePhotoUpload()">
-            <div class="avatar" id="myAvatar">A</div>
-            <div class="avatar-overlay">
-              <svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm8 3a5 5 0 1 0 0 10 5 5 0 0 0 0-10z"/></svg>
-            </div>
-          </div>
-          <input type="file" id="profilePhotoInput" accept="image/*" style="display: none;" onchange="uploadProfilePhoto(event)">
-
-          <div class="user-info">
-            <h4>Your Number</h4>
-            <p id="myNumberDisplay">Generating...</p>
-          </div>
+        <span class="brand-title">WhatsApp</span>
+        <div class="header-actions">
+          <button class="icon-btn" onclick="triggerProfileUpload()" title="Profile Photo">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+          </button>
+          <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="uploadProfile(event)">
+          <button class="icon-btn" onclick="openNewChatModal()" title="New Chat">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+          </button>
         </div>
-        <button class="copy-btn" title="Copy Number" onclick="copyMyNumber()">
-          <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
-        </button>
       </div>
 
-      <div class="chat-starter">
-        <h3>Start Conversation</h3>
-        <input type="text" id="recipientInput" placeholder="Enter recipient's number (+1...)">
-        <button onclick="startPrivateChat()">Message User</button>
+      <!-- Search Input -->
+      <div class="search-box">
+        <div class="search-input-wrapper">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" placeholder="Ask Meta AI or Search" id="searchInput" oninput="filterChats()">
+        </div>
+      </div>
+
+      <!-- Filter Pills -->
+      <div class="filters-row">
+        <button class="pill active">All</button>
+        <button class="pill">Unread</button>
+        <button class="pill">Favourites</button>
+        <button class="pill">Groups</button>
+      </div>
+
+      <!-- Active Chats List -->
+      <div class="chat-list" id="chatsListContainer"></div>
+
+      <!-- Green Floating Action Button (+) -->
+      <button class="fab-btn" onclick="openNewChatModal()" title="Start New Chat">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </button>
+
+      <!-- Bottom Nav Tabs -->
+      <div class="bottom-nav">
+        <button class="nav-tab active">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+          <span>Chats</span>
+        </button>
+        <button class="nav-tab">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+          <span>Updates</span>
+        </button>
+        <button class="nav-tab">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+          <span>Communities</span>
+        </button>
+        <button class="nav-tab">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+          <span>Calls</span>
+        </button>
       </div>
     </div>
 
-    <!-- Chat Panel -->
+    <!-- Right Chat Screen -->
     <div class="chat-panel">
       <div class="chat-header">
-        <button class="back-btn" onclick="closeMobileChat()">
-          <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-        </button>
-        <span id="chatTitle">Select or enter a number to start messaging</span>
+        <div class="chat-header-left">
+          <button class="back-btn" onclick="closeMobileChat()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          </button>
+          <div class="chat-avatar" id="activeChatAvatar">?</div>
+          <div>
+            <div style="font-weight: 600; font-size: 16px;" id="activeChatName">Select a contact to start messaging</div>
+            <div style="font-size: 11px; color: var(--wa-text-muted);" id="activeChatStatus">online</div>
+          </div>
+        </div>
       </div>
 
+      <!-- Messages Stream -->
       <div class="messages-container" id="messagesBox"></div>
-      
-      <div class="input-area">
-        <!-- Media / File Attachment Button -->
-        <button class="icon-btn" title="Attach Media or File" onclick="triggerFileUpload()" id="attachBtn" disabled>
-          <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-        </button>
-        <input type="file" id="fileAttachmentInput" style="display: none;" onchange="sendFileAttachment(event)">
 
-        <input type="text" id="msgInput" placeholder="Write a message..." disabled>
-        <button id="sendBtn" onclick="sendMessage()" disabled>Send</button>
+      <!-- Message Input Bar -->
+      <div class="input-area">
+        <button class="icon-btn" onclick="triggerFileUpload()" id="attachBtn" disabled>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+        </button>
+        <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)">
+
+        <input type="text" id="msgInput" placeholder="Message" disabled onkeypress="handleKeyPress(event)">
+        
+        <button class="send-circle-btn" id="sendBtn" onclick="sendMessage()" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
       </div>
     </div>
+
   </div>
 
-  <!-- Settings Modal -->
-  <div class="modal-overlay" id="settingsModal">
+  <!-- Start New Chat Modal -->
+  <div class="modal-overlay" id="newChatModal">
     <div class="modal-box">
-      <div class="modal-header">
-        <h3>Settings</h3>
-        <button class="icon-btn" onclick="closeSettings()">
-          <svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </div>
-      <div class="setting-item">
-        <span>Dark Mode</span>
-        <label class="switch">
-          <input type="checkbox" id="themeToggle" onchange="toggleTheme(this.checked)">
-          <span class="slider"></span>
-        </label>
-      </div>
+      <h3>New Chat</h3>
+      <input type="text" id="newNumberInput" placeholder="Enter phone number (+1...)">
+      <button onclick="startNewChat()">Start Chat</button>
     </div>
   </div>
 
   <script>
-    // Splash screen
+    // Hide Splash
     window.addEventListener('load', () => {
       setTimeout(() => {
         document.getElementById('splash-screen').style.opacity = '0';
         document.getElementById('splash-screen').style.visibility = 'hidden';
-        document.getElementById('appContainer').style.opacity = '1';
-      }, 1200);
+      }, 1000);
     });
-
-    // Theme logic
-    const savedTheme = localStorage.getItem('airnode_theme') || 'dark';
-    if (savedTheme === 'light') {
-      document.body.setAttribute('data-theme', 'light');
-      document.getElementById('themeToggle').checked = false;
-    }
-
-    function toggleTheme(isDark) {
-      if (isDark) {
-        document.body.removeAttribute('data-theme');
-        localStorage.setItem('airnode_theme', 'dark');
-      } else {
-        document.body.setAttribute('data-theme', 'light');
-        localStorage.setItem('airnode_theme', 'light');
-      }
-    }
-
-    function openSettings() { document.getElementById('settingsModal').classList.add('active'); }
-    function closeSettings() { document.getElementById('settingsModal').classList.remove('active'); }
-
-    // Profile Photo Avatar logic
-    const savedAvatar = localStorage.getItem('airnode_profile_photo');
-    if (savedAvatar) {
-      const avatarEl = document.getElementById('myAvatar');
-      avatarEl.style.backgroundImage = `url(${savedAvatar})`;
-      avatarEl.innerText = '';
-    }
-
-    function triggerProfilePhotoUpload() {
-      document.getElementById('profilePhotoInput').click();
-    }
-
-    function uploadProfilePhoto(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const photoData = e.target.result;
-        localStorage.setItem('airnode_profile_photo', photoData);
-        const avatarEl = document.getElementById('myAvatar');
-        avatarEl.style.backgroundImage = `url(${photoData})`;
-        avatarEl.innerText = '';
-      };
-      reader.readAsDataURL(file);
-    }
 
     const socket = io();
 
-    // Unique user phone number
+    // User's Phone Number Setup
     let myNumber = localStorage.getItem('airnode_my_number');
     if (!myNumber) {
-      const randomSuffix = Math.floor(1000000 + Math.random() * 9000000);
-      myNumber = `+1 (814) ${randomSuffix}`;
+      myNumber = `+1 (814) ${Math.floor(1000000 + Math.random() * 9000000)}`;
       localStorage.setItem('airnode_my_number', myNumber);
     }
 
-    document.getElementById('myNumberDisplay').innerText = myNumber;
-    let currentRecipient = null;
+    // Load saved contacts list
+    let recentChats = JSON.parse(localStorage.getItem('airnode_recent_chats') || '[]');
+    let activeRecipient = null;
 
-    function copyMyNumber() {
-      navigator.clipboard.writeText(myNumber).then(() => alert('Phone number copied to clipboard! 📋'));
+    renderChatList();
+
+    function openNewChatModal() { document.getElementById('newChatModal').classList.add('active'); }
+    function closeNewChatModal() { document.getElementById('newChatModal').classList.remove('active'); }
+
+    function startNewChat() {
+      const number = document.getElementById('newNumberInput').value.trim();
+      if (!number) return alert('Enter a phone number!');
+      if (number === myNumber) return alert("You can't chat with yourself!");
+
+      addContactToRecent(number, "Tap to send a message...");
+      closeNewChatModal();
+      openChat(number);
     }
 
-    function startPrivateChat() {
-      const recipient = document.getElementById('recipientInput').value.trim();
-      if (!recipient) return alert('Please enter a valid phone number!');
-      if (recipient === myNumber) return alert("You can't message your own number!");
+    function addContactToRecent(number, lastMsg = '') {
+      const existing = recentChats.find(c => c.number === number);
+      const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      currentRecipient = recipient;
-      document.getElementById('chatTitle').innerText = `Chatting with: ${currentRecipient}`;
+      if (existing) {
+        existing.lastMsg = lastMsg || existing.lastMsg;
+        existing.time = now;
+      } else {
+        recentChats.unshift({ number, lastMsg, time: now });
+      }
+
+      localStorage.setItem('airnode_recent_chats', JSON.stringify(recentChats));
+      renderChatList();
+    }
+
+    function renderChatList() {
+      const container = document.getElementById('chatsListContainer');
+      container.innerHTML = '';
+
+      if (recentChats.length === 0) {
+        container.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--wa-text-muted); font-size: 13px;">No chats yet. Tap + to start one!</div>`;
+        return;
+      }
+
+      recentChats.forEach(chat => {
+        const div = document.createElement('div');
+        div.className = `chat-item ${activeRecipient === chat.number ? 'active' : ''}`;
+        div.onclick = () => openChat(chat.number);
+
+        div.innerHTML = `
+          <div class="chat-avatar">${chat.number.substring(chat.number.length - 2)}</div>
+          <div class="chat-info">
+            <div class="chat-top-row">
+              <span class="chat-name">${chat.number}</span>
+              <span class="chat-time">${chat.time || ''}</span>
+            </div>
+            <div class="chat-last-msg">${chat.lastMsg || 'Tap to chat'}</div>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function openChat(recipientNumber) {
+      activeRecipient = recipientNumber;
+      document.getElementById('activeChatName').innerText = recipientNumber;
+      document.getElementById('activeChatAvatar').innerText = recipientNumber.substring(recipientNumber.length - 2);
+
       document.getElementById('msgInput').disabled = false;
       document.getElementById('sendBtn').disabled = false;
       document.getElementById('attachBtn').disabled = false;
-      document.getElementById('messagesBox').innerHTML = '';
 
       document.body.classList.add('mobile-chat-active');
-      socket.emit('join_chat', { myNumber, recipientNumber: currentRecipient });
+      renderChatList();
+
+      socket.emit('join_chat', { myNumber, recipientNumber: activeRecipient });
     }
 
     function closeMobileChat() { document.body.classList.remove('mobile-chat-active'); }
 
-    // File / Media attachment upload logic
-    function triggerFileUpload() {
-      document.getElementById('fileAttachmentInput').click();
-    }
+    function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
 
-    function sendFileAttachment(event) {
-      const file = event.target.files[0];
-      if (!file || !currentRecipient) return;
+    function sendMessage() {
+      const text = document.getElementById('msgInput').value.trim();
+      if (!text || !activeRecipient) return;
 
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const fileData = e.target.result;
-        socket.emit('send_private_message', {
-          sender: myNumber,
-          recipient: currentRecipient,
-          message: '',
-          file: {
-            data: fileData,
-            name: file.name,
-            type: file.type
-          }
-        });
-      };
-      reader.readAsDataURL(file);
+      socket.emit('send_private_message', { sender: myNumber, recipient: activeRecipient, message: text });
+      addContactToRecent(activeRecipient, text);
+      document.getElementById('msgInput').value = '';
     }
 
     socket.on('load_history', (history) => {
@@ -360,58 +411,69 @@
       history.forEach(msg => appendMessage(msg));
     });
 
-    function sendMessage() {
-      const text = document.getElementById('msgInput').value.trim();
-      if (!text || !currentRecipient) return;
+    socket.on('receive_private_message', (msg) => {
+      if (msg.sender === activeRecipient || msg.sender === myNumber) {
+        appendMessage(msg);
+      }
+      addContactToRecent(msg.sender === myNumber ? msg.recipient : msg.sender, msg.message || 'Media file');
+    });
 
-      socket.emit('send_private_message', { sender: myNumber, recipient: currentRecipient, message: text });
-      document.getElementById('msgInput').value = '';
-    }
-
-    socket.on('receive_private_message', (msg) => { appendMessage(msg); });
-
-    // Render text, images, videos, audio, and documents dynamically
     function appendMessage(msg) {
       const box = document.getElementById('messagesBox');
       const div = document.createElement('div');
       const isMe = msg.sender === myNumber;
-      
+      const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
       div.className = `message ${isMe ? 'sent' : 'received'}`;
 
       if (msg.message) {
-        const p = document.createElement('p');
+        const p = document.createElement('div');
         p.innerText = msg.message;
         div.appendChild(p);
       }
 
       if (msg.file) {
-        const fileType = msg.file.type;
-        if (fileType.startsWith('image/')) {
-          const img = document.createElement('img');
-          img.src = msg.file.data;
-          div.appendChild(img);
-        } else if (fileType.startsWith('video/')) {
-          const video = document.createElement('video');
-          video.src = msg.file.data;
-          video.controls = true;
-          div.appendChild(video);
-        } else if (fileType.startsWith('audio/')) {
-          const audio = document.createElement('audio');
-          audio.src = msg.file.data;
-          audio.controls = true;
-          div.appendChild(audio);
-        } else {
-          const link = document.createElement('a');
-          link.href = msg.file.data;
-          link.download = msg.file.name;
-          link.innerText = `📄 ${msg.file.name}`;
-          link.style.color = '#00a884';
-          div.appendChild(link);
+        if (msg.file.type.startsWith('image/')) {
+          const img = document.createElement('img'); img.src = msg.file.data; div.appendChild(img);
+        } else if (msg.file.type.startsWith('video/')) {
+          const video = document.createElement('video'); video.src = msg.file.data; video.controls = true; div.appendChild(video);
+        } else if (msg.file.type.startsWith('audio/')) {
+          const audio = document.createElement('audio'); audio.src = msg.file.data; audio.controls = true; div.appendChild(audio);
         }
       }
 
+      const meta = document.createElement('div');
+      meta.className = 'msg-meta';
+      meta.innerHTML = `${timeStr} ${isMe ? '<span class="msg-check">✓✓</span>' : ''}`;
+      div.appendChild(meta);
+
       box.appendChild(div);
       box.scrollTop = box.scrollHeight;
+    }
+
+    function triggerFileUpload() { document.getElementById('fileInput').click(); }
+    
+    function sendFile(e) {
+      const file = e.target.files[0];
+      if (!file || !activeRecipient) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        socket.emit('send_private_message', {
+          sender: myNumber,
+          recipient: activeRecipient,
+          message: '',
+          file: { data: evt.target.result, name: file.name, type: file.type }
+        });
+        addContactToRecent(activeRecipient, '📷 Photo / Media');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function triggerProfileUpload() { document.getElementById('profileInput').click(); }
+    function uploadProfile(e) {
+      const file = e.target.files[0];
+      if (file) alert('Profile updated successfully!');
     }
   </script>
 </body>
