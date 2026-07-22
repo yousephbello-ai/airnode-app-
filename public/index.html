@@ -509,6 +509,11 @@
   </div>
 
   <script>
+    // Strips non-numeric characters so routing & matching remain perfectly consistent
+    function cleanNumber(num) {
+      return num ? String(num).replace(/\D/g, '') : '';
+    }
+
     window.addEventListener('load', () => {
       setTimeout(() => {
         document.getElementById('splash-screen').style.opacity = '0';
@@ -544,7 +549,7 @@
     }
 
     document.getElementById('settingsName').innerText = myNumber;
-    document.getElementById('settingsHandle').innerText = `@${myNumber.replace(/[^0-9]/g, '')}`;
+    document.getElementById('settingsHandle').innerText = `@${cleanNumber(myNumber)}`;
     document.getElementById('settingsAvatar').innerText = myNumber.substring(myNumber.length - 2);
 
     function openSettings() { document.getElementById('settingsPanel').classList.add('active'); }
@@ -561,7 +566,7 @@
     function startNewChat() {
       const number = document.getElementById('newNumberInput').value.trim();
       if (!number) return alert('Enter a phone number!');
-      if (number === myNumber) return alert("You can't chat with yourself!");
+      if (cleanNumber(number) === cleanNumber(myNumber)) return alert("You can't chat with yourself!");
 
       addContactToRecent(number, "Tap to send a message...");
       closeNewChatModal();
@@ -569,7 +574,8 @@
     }
 
     function addContactToRecent(number, lastMsg = '') {
-      const existing = recentChats.find(c => c.number === number);
+      const cleanTarget = cleanNumber(number);
+      const existing = recentChats.find(c => cleanNumber(c.number) === cleanTarget);
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       if (existing) {
@@ -594,7 +600,7 @@
 
       recentChats.forEach(chat => {
         const div = document.createElement('div');
-        div.className = `chat-item ${activeRecipient === chat.number ? 'active' : ''}`;
+        div.className = `chat-item ${cleanNumber(activeRecipient) === cleanNumber(chat.number) ? 'active' : ''}`;
         div.onclick = () => openChat(chat.number);
 
         div.innerHTML = `
@@ -623,7 +629,10 @@
       document.body.classList.add('mobile-chat-active');
       renderChatList();
 
-      socket.emit('join_chat', { myNumber, recipientNumber: activeRecipient });
+      socket.emit('join_chat', { 
+        myNumber: cleanNumber(myNumber), 
+        recipientNumber: cleanNumber(activeRecipient) 
+      });
     }
 
     function closeMobileChat() { document.body.classList.remove('mobile-chat-active'); }
@@ -634,7 +643,12 @@
       const text = document.getElementById('msgInput').value.trim();
       if (!text || !activeRecipient) return;
 
-      socket.emit('send_private_message', { sender: myNumber, recipient: activeRecipient, message: text });
+      socket.emit('send_private_message', { 
+        sender: cleanNumber(myNumber), 
+        recipient: cleanNumber(activeRecipient), 
+        message: text 
+      });
+
       addContactToRecent(activeRecipient, text);
       document.getElementById('msgInput').value = '';
     }
@@ -646,16 +660,22 @@
     });
 
     socket.on('receive_private_message', (msg) => {
-      if (msg.sender === activeRecipient || msg.sender === myNumber) {
+      const msgSender = cleanNumber(msg.sender);
+      const currentActive = cleanNumber(activeRecipient);
+      const currentMe = cleanNumber(myNumber);
+
+      if (msgSender === currentActive || msgSender === currentMe) {
         appendMessage(msg);
       }
-      addContactToRecent(msg.sender === myNumber ? msg.recipient : msg.sender, msg.message || 'Media file');
+
+      const targetNumber = msgSender === currentMe ? msg.recipient : msg.sender;
+      addContactToRecent(targetNumber, msg.message || 'Media file');
     });
 
     function appendMessage(msg) {
       const box = document.getElementById('messagesBox');
       const div = document.createElement('div');
-      const isMe = msg.sender === myNumber;
+      const isMe = cleanNumber(msg.sender) === cleanNumber(myNumber);
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       div.className = `message ${isMe ? 'sent' : 'received'}`;
@@ -694,8 +714,8 @@
       const reader = new FileReader();
       reader.onload = function(evt) {
         socket.emit('send_private_message', {
-          sender: myNumber,
-          recipient: activeRecipient,
+          sender: cleanNumber(myNumber),
+          recipient: cleanNumber(activeRecipient),
           message: '',
           file: { data: evt.target.result, name: file.name, type: file.type }
         });
