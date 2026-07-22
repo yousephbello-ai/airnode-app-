@@ -82,7 +82,7 @@ io.on('connection', (socket) => {
   // Load message history on connect
   Message.find().sort({ timestamp: 1 }).limit(50)
     .then(messages => socket.emit('load_history', messages))
-    .catch(err => console.error('Error loading history:', err));
+    .catch(err => console.error('Error loading history:', err.message));
 
   socket.on('send_message', async (data) => {
     try {
@@ -90,22 +90,28 @@ io.on('connection', (socket) => {
       await newMsg.save();
       io.emit('receive_message', newMsg);
     } catch (err) {
-      console.error('Error saving message:', err);
+      console.error('Error saving message:', err.message);
     }
   });
 });
 
-// 6. Connect to DB First, Then Start Server
+// 6. Connect to DB with Log Diagnostics
 const MONGO_URI = process.env.MONGO_URI;
 const PORT = process.env.PORT || 5000;
 
-mongoose.connect(MONGO_URI)
-  .then(() => {
-    console.log('MongoDB Connected Successfully 🚀');
-    server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-  })
-  .catch((err) => {
-    console.error('MongoDB Initial Connection Error:', err);
-    // Listen anyway so Express endpoints return clear errors instead of 502 crashing
-    server.listen(PORT, () => console.log(`Server running on port ${PORT} (DB Disconnected)`));
-  });
+console.log('Attempting connection with URI:', MONGO_URI ? MONGO_URI.replace(/:([^@]+)@/, ':****@') : 'UNDEFINED');
+
+if (!MONGO_URI) {
+  console.error('CRITICAL ERROR: MONGO_URI variable is missing in Render!');
+} else {
+  mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 })
+    .then(() => {
+      console.log('MongoDB Connected Successfully 🚀');
+    })
+    .catch((err) => {
+      console.error('MongoDB Connection Failed:', err.message);
+    });
+}
+
+// Start Server
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
