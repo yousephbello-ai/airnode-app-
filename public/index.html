@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -21,6 +21,7 @@
       --an-text-muted: #9ca3af;
       --an-border: #1f2937;
       --an-check: #00f2fe;
+      --an-header-bg: #111827;
     }
 
     [data-theme="light"] {
@@ -28,7 +29,7 @@
       --an-sidebar: #ffffff;
       --an-card: #e5e7eb;
       --an-card-hover: #d1d5db;
-      --an-input: #f3f4f6;
+      --an-input: #ffffff;
       --an-neon-cyan: #0284c7;
       --an-neon-blue: #2563eb;
       --an-accent-purple: #7c3aed;
@@ -37,11 +38,12 @@
       --an-text-main: #111827;
       --an-text-muted: #6b7280;
       --an-border: #e5e7eb;
-      --an-check: #3b82f6;
+      --an-check: #2563eb;
+      --an-header-bg: #ffffff;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { display: flex; height: 100vh; width: 100vw; background: var(--an-bg-main); color: var(--an-text-main); overflow: hidden; }
+    body { display: flex; height: 100vh; width: 100vw; background: var(--an-bg-main); color: var(--an-text-main); overflow: hidden; transition: background 0.3s, color 0.3s; }
 
     /* --- Splash Screen --- */
     #splash-screen {
@@ -56,12 +58,12 @@
     .splash-title { margin-top: 18px; font-size: 22px; font-weight: 700; color: var(--an-text-main); letter-spacing: 1px; }
 
     /* --- Main App Layout --- */
-    .app-container { display: flex; width: 100vw; height: 100vh; }
+    .app-container { display: flex; width: 100vw; height: 100vh; position: relative; overflow: hidden; }
 
     /* Left Sidebar / Chats Screen */
     .sidebar {
       width: 380px; background: var(--an-sidebar); border-right: 1px solid var(--an-border);
-      display: flex; flex-direction: column; flex-shrink: 0; position: relative;
+      display: flex; flex-direction: column; flex-shrink: 0; position: relative; transition: background 0.3s;
     }
 
     .sidebar-header {
@@ -110,7 +112,7 @@
       width: 48px; height: 48px; border-radius: 16px;
       background: linear-gradient(135deg, var(--an-neon-blue), var(--an-accent-purple));
       display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff;
-      flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     .chat-info { flex: 1; min-width: 0; }
     .chat-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
@@ -154,7 +156,7 @@
     .message {
       max-width: 68%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.4;
       position: relative; word-wrap: break-word; display: flex; flex-direction: column;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     .message.sent { align-self: flex-end; background: var(--an-bubble-sent); color: #ffffff; border-bottom-right-radius: 2px; }
     .message.received { align-self: flex-start; background: var(--an-bubble-recv); color: var(--an-text-main); border-bottom-left-radius: 2px; border: 1px solid var(--an-border); }
@@ -183,7 +185,59 @@
     }
     .send-circle-btn:active { transform: scale(0.92); }
 
-    /* New Chat Modal */
+    /* --- Settings Screen Overlay --- */
+    .settings-panel {
+      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--an-sidebar); z-index: 100; display: flex; flex-direction: column;
+      transform: translateX(-100%); transition: transform 0.3s ease; overflow-y: auto;
+    }
+    .settings-panel.active { transform: translateX(0); }
+
+    .settings-header {
+      padding: 16px 20px; display: flex; align-items: center; gap: 16px; border-bottom: 1px solid var(--an-border);
+    }
+    .settings-header h2 { font-size: 18px; font-weight: 700; color: var(--an-text-main); }
+
+    .profile-card {
+      display: flex; flex-direction: column; align-items: center; padding: 24px 16px; border-bottom: 1px solid var(--an-border); text-align: center;
+    }
+    .thought-bubble {
+      background: var(--an-card); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--an-text-muted);
+      margin-bottom: -10px; border: 1px solid var(--an-border); position: relative; z-index: 2;
+    }
+    .profile-avatar-wrapper { position: relative; margin-bottom: 12px; }
+    .profile-avatar {
+      width: 86px; height: 86px; border-radius: 50%; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-accent-purple));
+      display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff;
+    }
+    .profile-add-badge {
+      position: absolute; bottom: 2px; right: 2px; width: 24px; height: 24px; background: var(--an-neon-cyan);
+      border-radius: 50%; color: #0b0f19; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--an-sidebar);
+    }
+    .profile-name { font-size: 20px; font-weight: 700; color: var(--an-text-main); display: flex; align-items: center; gap: 6px; }
+    .profile-handle { font-size: 13px; color: var(--an-text-muted); margin-top: 2px; }
+
+    /* Settings List Items */
+    .settings-list { display: flex; flex-direction: column; padding: 8px 0 24px; }
+    .settings-item {
+      display: flex; align-items: center; gap: 18px; padding: 14px 20px; cursor: pointer; transition: background 0.2s;
+    }
+    .settings-item:hover { background: var(--an-card); }
+    .settings-icon { color: var(--an-text-muted); display: flex; align-items: center; }
+    .settings-icon svg { width: 22px; height: 22px; fill: currentColor; }
+    .settings-text { flex: 1; display: flex; flex-direction: column; }
+    .settings-title { font-size: 15px; font-weight: 600; color: var(--an-text-main); }
+    .settings-sub { font-size: 12px; color: var(--an-text-muted); margin-top: 2px; }
+
+    /* Theme Switch Toggle inside Settings */
+    .theme-switch-container { display: flex; align-items: center; gap: 10px; }
+    .theme-toggle-btn {
+      background: var(--an-card); border: 1px solid var(--an-border); color: var(--an-text-main);
+      padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+
+    /* Modal Overlay */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; }
     .modal-overlay.active { display: flex; }
     .modal-box { background: var(--an-sidebar); width: 340px; padding: 24px; border-radius: 20px; border: 1px solid var(--an-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
@@ -218,10 +272,10 @@
       <div class="sidebar-header">
         <span class="brand-title">Airnode</span>
         <div class="header-actions">
-          <button class="icon-btn" onclick="triggerProfileUpload()" title="Profile Photo">
+          <!-- Profile/Settings Icon -->
+          <button class="icon-btn" onclick="openSettings()" title="Settings">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
           </button>
-          <input type="file" id="profileInput" accept="image/*" style="display: none;" onchange="uploadProfile(event)">
           <button class="icon-btn" onclick="openNewChatModal()" title="New Chat">
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
           </button>
@@ -266,11 +320,151 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           <span>Channels</span>
         </button>
-        <button class="nav-tab">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-          <span>Calls</span>
+        <button class="nav-tab" onclick="openSettings()">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <span>Settings</span>
         </button>
       </div>
+
+      <!-- --- Settings Overlay Panel --- -->
+      <div class="settings-panel" id="settingsPanel">
+        <div class="settings-header">
+          <button class="icon-btn" onclick="closeSettings()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+          </button>
+          <h2>Settings</h2>
+        </div>
+
+        <!-- Profile Banner -->
+        <div class="profile-card">
+          <div class="thought-bubble">Share a thought!</div>
+          <div class="profile-avatar-wrapper">
+            <div class="profile-avatar" id="settingsAvatar">A</div>
+            <div class="profile-add-badge">+</div>
+          </div>
+          <div class="profile-name" id="settingsName">User Name</div>
+          <div class="profile-handle" id="settingsHandle">@user_handle</div>
+        </div>
+
+        <!-- Settings Options List -->
+        <div class="settings-list">
+          
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v2h2v-2h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Account</div>
+              <div class="settings-sub">Security notifications, change number</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Privacy</div>
+              <div class="settings-sub">Blocked accounts, disappearing messages</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Lists</div>
+              <div class="settings-sub">Manage people and groups</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Chats</div>
+              <div class="settings-sub">Theme, wallpapers, chat history</div>
+            </div>
+          </div>
+
+          <!-- Appearance Option with Light/Dark Theme Switcher -->
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.21 19.55 10.56 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Appearance</div>
+              <div class="settings-sub">Chat theme, app icon, app theme</div>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleTheme(event)">
+              <span id="themeToggleLabel">🌙 Dark</span>
+            </button>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Notifications</div>
+              <div class="settings-sub">Message, group & call tones</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Storage and data</div>
+              <div class="settings-sub">Network usage, auto-download</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Accessibility</div>
+              <div class="settings-sub">Increase contrast, animation</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm6.93 6h-2.95c-.32-1.25-.78-2.45-1.38-3.56 1.84.63 3.37 1.91 4.33 3.56zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14C4.1 13.36 4 12.69 4 12s.1-1.36.26-2h3.38c-.08.66-.14 1.32-.14 2 0 .68.06 1.34.14 2H4.26zm.82 2h2.95c.32 1.25.78 2.45 1.38 3.56-1.84-.63-3.37-1.9-4.33-3.56zm2.95-8H5.08c.96-1.66 2.49-2.93 4.33-3.56C8.81 5.55 8.35 6.75 8.03 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66c-.09-.66-.16-1.32-.16-2 0-.68.07-1.35.16-2h4.68c.09.65.16 1.32.16 2 0 .68-.07 1.34-.16 2zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95c-.96 1.65-2.49 2.93-4.33 3.56zM16.36 14c.08-.66.14-1.32.14-2 0-.68-.06-1.34-.14-2h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">App language</div>
+              <div class="settings-sub">English (device's language)</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16h-2v-2h2v2zm1.07-7.75l-.9.92C12.45 11.9 12 12.5 12 14h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Help and feedback</div>
+              <div class="settings-sub">Help centre, contact us, privacy policy</div>
+            </div>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9 0c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4zm9 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2c0-2.66-5.33-4-8-4z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Invite a friend</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
     </div>
 
     <!-- Right Chat Screen -->
@@ -328,12 +522,41 @@
 
     const socket = io();
 
+    // Theme Management
+    let savedTheme = localStorage.getItem('airnode_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    updateThemeLabel();
+
+    function toggleTheme(e) {
+      if (e) e.stopPropagation();
+      savedTheme = savedTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      localStorage.setItem('airnode_theme', savedTheme);
+      updateThemeLabel();
+    }
+
+    function updateThemeLabel() {
+      const btnLabel = document.getElementById('themeToggleLabel');
+      if (btnLabel) {
+        btnLabel.innerText = savedTheme === 'dark' ? '🌙 Dark' : '☀️ Light';
+      }
+    }
+
     // User's Phone Number Setup
     let myNumber = localStorage.getItem('airnode_my_number');
     if (!myNumber) {
       myNumber = `+1 (814) ${Math.floor(1000000 + Math.random() * 9000000)}`;
       localStorage.setItem('airnode_my_number', myNumber);
     }
+
+    // Populate Settings Profile Details
+    document.getElementById('settingsName').innerText = myNumber;
+    document.getElementById('settingsHandle').innerText = `@${myNumber.replace(/[^0-9]/g, '')}`;
+    document.getElementById('settingsAvatar').innerText = myNumber.substring(myNumber.length - 2);
+
+    // Settings Panel Controls
+    function openSettings() { document.getElementById('settingsPanel').classList.add('active'); }
+    function closeSettings() { document.getElementById('settingsPanel').classList.remove('active'); }
 
     // Load saved contacts list
     let recentChats = JSON.parse(localStorage.getItem('airnode_recent_chats') || '[]');
@@ -488,12 +711,6 @@
         addContactToRecent(activeRecipient, '📷 Media Attachment');
       };
       reader.readAsDataURL(file);
-    }
-
-    function triggerProfileUpload() { document.getElementById('profileInput').click(); }
-    function uploadProfile(e) {
-      const file = e.target.files[0];
-      if (file) alert('Airnode profile updated successfully!');
     }
   </script>
 </body>
