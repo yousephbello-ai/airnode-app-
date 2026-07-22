@@ -3,175 +3,195 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>WhatsApp</title>
+  <title>Airnode</title>
   <script src="/socket.io/socket.io.js"></script>
   <style>
     :root {
-      --wa-bg-dark: #0b141a;
-      --wa-sidebar-dark: #111b21;
-      --wa-card-dark: #202c33;
-      --wa-input-dark: #2a3942;
-      --wa-green: #00a884;
-      --wa-green-light: #25d366;
-      --wa-bubble-sent: #005c4b;
-      --wa-bubble-recv: #202c33;
-      --wa-text-main: #e9edef;
-      --wa-text-muted: #8696a0;
-      --wa-border: #222d34;
-      --wa-check: #53bdeb;
+      --an-bg-main: #0b0f19;
+      --an-sidebar: #111827;
+      --an-card: #1f2937;
+      --an-card-hover: #374151;
+      --an-input: #1f2937;
+      --an-neon-cyan: #00f2fe;
+      --an-neon-blue: #4facfe;
+      --an-accent-purple: #7c3aed;
+      --an-bubble-sent: linear-gradient(135deg, #0052d4 0%, #4364f7 50%, #6fb1fc 100%);
+      --an-bubble-recv: #1f2937;
+      --an-text-main: #f9fafb;
+      --an-text-muted: #9ca3af;
+      --an-border: #1f2937;
+      --an-check: #00f2fe;
     }
 
     [data-theme="light"] {
-      --wa-bg-dark: #efeae2;
-      --wa-sidebar-dark: #ffffff;
-      --wa-card-dark: #f0f2f5;
-      --wa-input-dark: #e9edef;
-      --wa-bubble-sent: #d9fdd3;
-      --wa-bubble-recv: #ffffff;
-      --wa-text-main: #111b21;
-      --wa-text-muted: #667781;
-      --wa-border: #e9edef;
+      --an-bg-main: #f3f4f6;
+      --an-sidebar: #ffffff;
+      --an-card: #e5e7eb;
+      --an-card-hover: #d1d5db;
+      --an-input: #f3f4f6;
+      --an-neon-cyan: #0284c7;
+      --an-neon-blue: #2563eb;
+      --an-accent-purple: #7c3aed;
+      --an-bubble-sent: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+      --an-bubble-recv: #ffffff;
+      --an-text-main: #111827;
+      --an-text-muted: #6b7280;
+      --an-border: #e5e7eb;
+      --an-check: #3b82f6;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
-    body { display: flex; height: 100vh; width: 100vw; background: var(--wa-bg-dark); color: var(--wa-text-main); overflow: hidden; }
+    body { display: flex; height: 100vh; width: 100vw; background: var(--an-bg-main); color: var(--an-text-main); overflow: hidden; }
 
     /* --- Splash Screen --- */
     #splash-screen {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background-color: var(--wa-bg-dark); display: flex; flex-direction: column; align-items: center; justify-content: center;
+      background-color: var(--an-bg-main); display: flex; flex-direction: column; align-items: center; justify-content: center;
       z-index: 9999; transition: opacity 0.4s ease, visibility 0.4s ease;
     }
     .splash-logo {
-      width: 72px; height: 72px; background: var(--wa-green); border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 36px; font-weight: bold; color: #fff; box-shadow: 0 0 20px rgba(0, 168, 132, 0.4);
+      width: 76px; height: 76px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-accent-purple)); border-radius: 22px; display: flex; align-items: center; justify-content: center;
+      font-size: 38px; font-weight: 800; color: #fff; box-shadow: 0 0 25px rgba(0, 242, 254, 0.4);
     }
-    .splash-title { margin-top: 15px; font-size: 20px; font-weight: 600; color: var(--wa-text-main); letter-spacing: 0.5px; }
+    .splash-title { margin-top: 18px; font-size: 22px; font-weight: 700; color: var(--an-text-main); letter-spacing: 1px; }
 
     /* --- Main App Layout --- */
     .app-container { display: flex; width: 100vw; height: 100vh; }
 
     /* Left Sidebar / Chats Screen */
     .sidebar {
-      width: 380px; background: var(--wa-sidebar-dark); border-right: 1px solid var(--wa-border);
+      width: 380px; background: var(--an-sidebar); border-right: 1px solid var(--an-border);
       display: flex; flex-direction: column; flex-shrink: 0; position: relative;
     }
 
     .sidebar-header {
-      padding: 16px; display: flex; align-items: center; justify-content: space-between; background: var(--wa-sidebar-dark);
+      padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; background: var(--an-sidebar);
     }
-    .brand-title { font-size: 22px; font-weight: bold; color: var(--wa-green); letter-spacing: -0.5px; }
-    .header-actions { display: flex; gap: 16px; align-items: center; }
-    .icon-btn { background: none; border: none; color: var(--wa-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .brand-title {
+      font-size: 24px; font-weight: 800;
+      background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-accent-purple));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .header-actions { display: flex; gap: 14px; align-items: center; }
+    .icon-btn { background: none; border: none; color: var(--an-text-muted); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+    .icon-btn:hover { color: var(--an-neon-cyan); }
     .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
     /* Search Bar */
     .search-box { padding: 8px 16px; }
     .search-input-wrapper {
-      display: flex; align-items: center; gap: 10px; background: var(--wa-card-dark);
-      padding: 8px 14px; border-radius: 20px; color: var(--wa-text-muted);
+      display: flex; align-items: center; gap: 10px; background: var(--an-card);
+      padding: 10px 16px; border-radius: 12px; color: var(--an-text-muted); border: 1px solid transparent;
+      transition: border-color 0.2s;
     }
+    .search-input-wrapper:focus-within { border-color: var(--an-neon-cyan); }
     .search-input-wrapper input {
-      background: none; border: none; outline: none; color: var(--wa-text-main); font-size: 14px; width: 100%;
+      background: none; border: none; outline: none; color: var(--an-text-main); font-size: 14px; width: 100%;
     }
 
     /* Filters Pill Row */
-    .filters-row { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; border-bottom: 1px solid var(--wa-border); }
+    .filters-row { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; }
     .pill {
-      background: var(--wa-card-dark); color: var(--wa-text-muted); font-size: 13px; font-weight: 500;
-      padding: 6px 14px; border-radius: 18px; cursor: pointer; white-space: nowrap; border: none;
+      background: var(--an-card); color: var(--an-text-muted); font-size: 13px; font-weight: 600;
+      padding: 6px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; border: 1px solid transparent; transition: all 0.2s;
     }
-    .pill.active { background: #074a3b; color: #00a884; }
+    .pill.active, .pill:hover { background: rgba(0, 242, 254, 0.15); color: var(--an-neon-cyan); border-color: rgba(0, 242, 254, 0.3); }
 
     /* Chat List Container */
-    .chat-list { flex: 1; overflow-y: auto; }
+    .chat-list { flex: 1; overflow-y: auto; padding: 6px 0; }
     .chat-item {
-      display: flex; align-items: center; gap: 12px; padding: 12px 16px; cursor: pointer;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.03); transition: background 0.2s;
+      display: flex; align-items: center; gap: 14px; padding: 12px 18px; cursor: pointer;
+      transition: background 0.2s; border-left: 3px solid transparent;
     }
-    .chat-item:hover, .chat-item.active { background: var(--wa-card-dark); }
+    .chat-item:hover, .chat-item.active { background: var(--an-card); border-left-color: var(--an-neon-cyan); }
     
     .chat-avatar {
-      width: 48px; height: 48px; border-radius: 50%; background: var(--wa-green);
-      display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px; color: #fff;
-      flex-shrink: 0; background-size: cover; background-position: center;
+      width: 48px; height: 48px; border-radius: 16px;
+      background: linear-gradient(135deg, var(--an-neon-blue), var(--an-accent-purple));
+      display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff;
+      flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
     .chat-info { flex: 1; min-width: 0; }
     .chat-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    .chat-name { font-size: 15px; font-weight: 600; color: var(--wa-text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-    .chat-time { font-size: 11px; color: var(--wa-text-muted); }
-    .chat-last-msg { font-size: 13px; color: var(--wa-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .chat-name { font-size: 15px; font-weight: 600; color: var(--an-text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .chat-time { font-size: 11px; color: var(--an-text-muted); }
+    .chat-last-msg { font-size: 13px; color: var(--an-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
     /* Floating Action Button (+) */
     .fab-btn {
       position: absolute; bottom: 70px; right: 20px; width: 52px; height: 52px;
-      background: var(--wa-green-light); border-radius: 16px; border: none; color: #0b141a;
+      background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border-radius: 16px; border: none; color: #0b0f19;
       display: flex; align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4); transition: transform 0.2s; z-index: 10;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); transition: transform 0.2s, box-shadow 0.2s; z-index: 10;
     }
-    .fab-btn:active { transform: scale(0.95); }
-    .fab-btn svg { width: 26px; height: 26px; fill: currentColor; }
+    .fab-btn:active { transform: scale(0.92); }
+    .fab-btn svg { width: 26px; height: 26px; fill: #0b0f19; }
 
     /* Bottom Navigation Bar */
     .bottom-nav {
       display: flex; justify-content: space-around; align-items: center;
-      padding: 10px 0 6px; background: var(--wa-sidebar-dark); border-top: 1px solid var(--wa-border);
+      padding: 10px 0 8px; background: var(--an-sidebar); border-top: 1px solid var(--an-border);
     }
-    .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--wa-text-muted); font-size: 11px; font-weight: 600; cursor: pointer; border: none; background: none; }
-    .nav-tab.active { color: var(--wa-text-main); }
-    .nav-badge { background: var(--wa-green); color: #0b141a; font-size: 10px; border-radius: 10px; padding: 2px 8px; font-weight: bold; }
+    .nav-tab { display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--an-text-muted); font-size: 11px; font-weight: 600; cursor: pointer; border: none; background: none; }
+    .nav-tab.active { color: var(--an-neon-cyan); }
 
     /* --- Right Chat Panel --- */
     .chat-panel {
-      flex: 1; display: flex; flex-direction: column; background: var(--wa-bg-dark);
-      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 0); background-size: 24px 24px;
+      flex: 1; display: flex; flex-direction: column; background: var(--an-bg-main);
+      background-image: radial-gradient(rgba(0, 242, 254, 0.05) 1px, transparent 0); background-size: 28px 28px;
     }
     .chat-header {
-      padding: 10px 16px; background: var(--wa-sidebar-dark); border-bottom: 1px solid var(--wa-border);
+      padding: 12px 20px; background: var(--an-sidebar); border-bottom: 1px solid var(--an-border);
       display: flex; align-items: center; justify-content: space-between;
     }
     .chat-header-left { display: flex; align-items: center; gap: 12px; }
-    .back-btn { display: none; background: none; border: none; color: var(--wa-text-muted); cursor: pointer; }
+    .back-btn { display: none; background: none; border: none; color: var(--an-text-muted); cursor: pointer; }
 
-    .messages-container { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+    .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
     /* Message Bubbles */
     .message {
-      max-width: 70%; padding: 8px 12px; border-radius: 10px; font-size: 14px; line-height: 1.4;
+      max-width: 68%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.4;
       position: relative; word-wrap: break-word; display: flex; flex-direction: column;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    .message.sent { align-self: flex-end; background: var(--wa-bubble-sent); color: var(--wa-text-main); border-top-right-radius: 0; }
-    .message.received { align-self: flex-start; background: var(--wa-bubble-recv); color: var(--wa-text-main); border-top-left-radius: 0; }
+    .message.sent { align-self: flex-end; background: var(--an-bubble-sent); color: #ffffff; border-bottom-right-radius: 2px; }
+    .message.received { align-self: flex-start; background: var(--an-bubble-recv); color: var(--an-text-main); border-bottom-left-radius: 2px; border: 1px solid var(--an-border); }
 
     .msg-meta {
       display: flex; align-items: center; justify-content: flex-end; gap: 4px;
-      font-size: 10px; color: var(--wa-text-muted); margin-top: 4px; align-self: flex-end;
+      font-size: 10px; opacity: 0.8; margin-top: 4px; align-self: flex-end;
     }
-    .msg-check { color: var(--wa-check); font-weight: bold; font-size: 11px; }
+    .msg-check { color: var(--an-check); font-weight: bold; font-size: 11px; }
 
-    .message img, .message video { max-width: 100%; border-radius: 8px; margin-top: 4px; }
-    .message audio { width: 100%; margin-top: 4px; }
+    .message img, .message video { max-width: 100%; border-radius: 10px; margin-top: 6px; }
+    .message audio { width: 100%; margin-top: 6px; }
 
     /* Chat Input Bar */
-    .input-area { padding: 10px 16px; background: var(--wa-sidebar-dark); display: flex; align-items: center; gap: 10px; }
+    .input-area { padding: 12px 20px; background: var(--an-sidebar); display: flex; align-items: center; gap: 12px; border-top: 1px solid var(--an-border); }
     .input-area input[type="text"] {
-      flex: 1; padding: 10px 16px; background: var(--wa-card-dark); border: none;
-      border-radius: 20px; color: var(--wa-text-main); font-size: 14px; outline: none;
+      flex: 1; padding: 12px 18px; background: var(--an-card); border: 1px solid transparent;
+      border-radius: 12px; color: var(--an-text-main); font-size: 14px; outline: none; transition: border-color 0.2s;
     }
+    .input-area input[type="text"]:focus { border-color: var(--an-neon-cyan); }
+    
     .send-circle-btn {
-      width: 42px; height: 42px; background: var(--wa-green); border-radius: 50%;
-      border: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+      width: 44px; height: 44px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border-radius: 12px;
+      border: none; color: #0b0f19; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); transition: transform 0.2s;
     }
+    .send-circle-btn:active { transform: scale(0.92); }
 
     /* New Chat Modal */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: none; align-items: center; justify-content: center; z-index: 10000; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; }
     .modal-overlay.active { display: flex; }
-    .modal-box { background: var(--wa-sidebar-dark); width: 340px; padding: 20px; border-radius: 16px; border: 1px solid var(--wa-border); }
-    .modal-box h3 { font-size: 18px; margin-bottom: 12px; }
-    .modal-box input { width: 100%; padding: 12px; background: var(--wa-card-dark); border: none; border-radius: 8px; color: #fff; font-size: 14px; outline: none; margin-bottom: 14px; }
-    .modal-box button { width: 100%; padding: 12px; background: var(--wa-green); border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
+    .modal-box { background: var(--an-sidebar); width: 340px; padding: 24px; border-radius: 20px; border: 1px solid var(--an-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .modal-box h3 { font-size: 18px; margin-bottom: 14px; color: var(--an-text-main); }
+    .modal-box input { width: 100%; padding: 12px 16px; background: var(--an-card); border: 1px solid var(--an-border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; margin-bottom: 16px; }
+    .modal-box button { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border: none; border-radius: 10px; color: #0b0f19; font-weight: 700; cursor: pointer; }
 
-    /* Responsive Design for Mobile Screen */
+    /* Mobile View */
     @media (max-width: 768px) {
       .sidebar { width: 100%; height: 100%; border-right: none; }
       .chat-panel { display: none; width: 100%; height: 100%; }
@@ -186,8 +206,8 @@
 
   <!-- Splash Screen -->
   <div id="splash-screen">
-    <div class="splash-logo">W</div>
-    <div class="splash-title">WhatsApp</div>
+    <div class="splash-logo">A</div>
+    <div class="splash-title">Airnode</div>
   </div>
 
   <!-- App Main Layout -->
@@ -196,7 +216,7 @@
     <!-- Left Sidebar / Chat List -->
     <div class="sidebar">
       <div class="sidebar-header">
-        <span class="brand-title">WhatsApp</span>
+        <span class="brand-title">Airnode</span>
         <div class="header-actions">
           <button class="icon-btn" onclick="triggerProfileUpload()" title="Profile Photo">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
@@ -212,7 +232,7 @@
       <div class="search-box">
         <div class="search-input-wrapper">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-          <input type="text" placeholder="Ask Meta AI or Search" id="searchInput" oninput="filterChats()">
+          <input type="text" placeholder="Search conversations..." id="searchInput" oninput="filterChats()">
         </div>
       </div>
 
@@ -227,7 +247,7 @@
       <!-- Active Chats List -->
       <div class="chat-list" id="chatsListContainer"></div>
 
-      <!-- Green Floating Action Button (+) -->
+      <!-- Glowing Floating Action Button (+) -->
       <button class="fab-btn" onclick="openNewChatModal()" title="Start New Chat">
         <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       </button>
@@ -244,7 +264,7 @@
         </button>
         <button class="nav-tab">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-          <span>Communities</span>
+          <span>Channels</span>
         </button>
         <button class="nav-tab">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
@@ -263,7 +283,7 @@
           <div class="chat-avatar" id="activeChatAvatar">?</div>
           <div>
             <div style="font-weight: 600; font-size: 16px;" id="activeChatName">Select a contact to start messaging</div>
-            <div style="font-size: 11px; color: var(--wa-text-muted);" id="activeChatStatus">online</div>
+            <div style="font-size: 11px; color: var(--an-neon-cyan);" id="activeChatStatus">online</div>
           </div>
         </div>
       </div>
@@ -278,7 +298,7 @@
         </button>
         <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)">
 
-        <input type="text" id="msgInput" placeholder="Message" disabled onkeypress="handleKeyPress(event)">
+        <input type="text" id="msgInput" placeholder="Message Airnode..." disabled onkeypress="handleKeyPress(event)">
         
         <button class="send-circle-btn" id="sendBtn" onclick="sendMessage()" disabled>
           <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
@@ -291,8 +311,8 @@
   <!-- Start New Chat Modal -->
   <div class="modal-overlay" id="newChatModal">
     <div class="modal-box">
-      <h3>New Chat</h3>
-      <input type="text" id="newNumberInput" placeholder="Enter phone number (+1...)">
+      <h3>New Airnode Chat</h3>
+      <input type="text" id="newNumberInput" placeholder="Enter recipient's number (+1...)">
       <button onclick="startNewChat()">Start Chat</button>
     </div>
   </div>
@@ -354,7 +374,7 @@
       container.innerHTML = '';
 
       if (recentChats.length === 0) {
-        container.innerHTML = `<div style="padding: 20px; text-align: center; color: var(--wa-text-muted); font-size: 13px;">No chats yet. Tap + to start one!</div>`;
+        container.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--an-text-muted); font-size: 13px;">No active chats. Tap + to start a conversation!</div>`;
         return;
       }
 
@@ -465,7 +485,7 @@
           message: '',
           file: { data: evt.target.result, name: file.name, type: file.type }
         });
-        addContactToRecent(activeRecipient, '📷 Photo / Media');
+        addContactToRecent(activeRecipient, '📷 Media Attachment');
       };
       reader.readAsDataURL(file);
     }
@@ -473,7 +493,7 @@
     function triggerProfileUpload() { document.getElementById('profileInput').click(); }
     function uploadProfile(e) {
       const file = e.target.files[0];
-      if (file) alert('Profile updated successfully!');
+      if (file) alert('Airnode profile updated successfully!');
     }
   </script>
 </body>
