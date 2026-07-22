@@ -1,51 +1,139 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Airnode Web App</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="/socket.io/socket.io.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Airnode Messenger</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+    body { display: flex; height: 100vh; background: #0b141a; color: #e9edef; }
+    
+    /* Left Sidebar */
+    .sidebar { width: 350px; background: #111b21; border-right: 1px solid #222d34; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+    .profile-card { display: flex; align-items: center; gap: 12px; background: #202c33; padding: 15px; border-radius: 10px; }
+    .avatar { width: 45px; height: 45px; background: #00a884; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
+    .user-info h4 { font-size: 16px; color: #e9edef; }
+    .user-info p { font-size: 13px; color: #8696a0; margin-top: 2px; }
+
+    .chat-starter { background: #182229; padding: 15px; border-radius: 10px; }
+    .chat-starter h3 { font-size: 14px; margin-bottom: 10px; color: #8696a0; text-transform: uppercase; }
+    .chat-starter input { width: 100%; padding: 10px; background: #2a3942; border: none; border-radius: 6px; color: #fff; margin-bottom: 10px; }
+    .chat-starter button { width: 100%; padding: 10px; background: #00a884; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; }
+
+    /* Right Chat Panel */
+    .chat-panel { flex: 1; display: flex; flex-direction: column; background: #0b141a; }
+    .chat-header { padding: 15px 20px; background: #202c33; border-bottom: 1px solid #222d34; font-weight: bold; }
+    .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+    
+    .message { max-width: 60%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
+    .message.sent { align-self: flex-end; background: #005c4b; color: #e9edef; }
+    .message.received { align-self: flex-start; background: #202c33; color: #e9edef; }
+
+    .input-area { padding: 15px; background: #202c33; display: flex; gap: 10px; }
+    .input-area input { flex: 1; padding: 12px; background: #2a3942; border: none; border-radius: 8px; color: #fff; }
+    .input-area button { padding: 12px 20px; background: #00a884; border: none; border-radius: 8px; color: #fff; font-weight: bold; cursor: pointer; }
+  </style>
 </head>
-<body class="dark-mode">
-    <div id="authScreen" class="auth-screen">
-        <div class="auth-card">
-            <h2>Airnode</h2>
-            <p>Encrypted Live Messenger</p>
-            <div id="authError" class="error-msg"></div>
-            <input type="text" id="authUsername" placeholder="Username">
-            <input type="password" id="authPassword" placeholder="Password">
-            <div class="auth-buttons">
-                <button id="loginBtn">Login</button>
-                <button id="registerBtn">Create Account</button>
-            </div>
-        </div>
+<body>
+
+  <!-- Left Sidebar -->
+  <div class="sidebar">
+    <h2>Airnode</h2>
+    
+    <div class="profile-card">
+      <div class="avatar" id="myAvatar">Y</div>
+      <div class="user-info">
+        <h4>Your Number</h4>
+        <p id="myNumberDisplay">Generating...</p>
+      </div>
     </div>
-    <div class="app-container hidden" id="appContainer">
-        <aside class="sidebar">
-            <h2>Airnode</h2>
-            <div class="user-card">
-                <div class="avatar" id="myAvatar">Y</div>
-                <div>
-                    <span id="myProfileName">User</span><br>
-                    <small id="myUsNumber">+1 (000) 000-0000</small>
-                </div>
-            </div>
-            <div class="add-friend-box">
-                <h4>Start Chat</h4>
-                <input type="text" id="targetNumberInput" placeholder="Enter US Number (+1...)">
-                <button id="startChatBtn">Open Chat Room</button>
-            </div>
-        </aside>
-        <main class="chat-window">
-            <div class="chat-header"><h3 id="activeChatTitle">Select or Add a Recipient</h3></div>
-            <div class="chat-body" id="chatBody"></div>
-            <div class="chat-input-area">
-                <input type="text" id="msgInput" placeholder="Write a message...">
-                <button id="sendBtn">➤</button>
-            </div>
-        </main>
+
+    <div class="chat-starter">
+      <h3>Start Conversation</h3>
+      <input type="text" id="recipientInput" placeholder="Enter recipient's number (+1...)">
+      <button onclick="startPrivateChat()">Message User</button>
     </div>
-    <script src="app.js"></script>
+  </div>
+
+  <!-- Right Chat Panel -->
+  <div class="chat-panel">
+    <div class="chat-header" id="chatHeader">Select or enter a number to start messaging</div>
+    <div class="messages-container" id="messagesBox"></div>
+    
+    <div class="input-area">
+      <input type="text" id="msgInput" placeholder="Write a message..." disabled>
+      <button id="sendBtn" onclick="sendMessage()" disabled>Send</button>
+    </div>
+  </div>
+
+  <script>
+    const socket = io();
+
+    // 1. Auto-generate or retrieve unique assigned phone number for this device
+    let myNumber = localStorage.getItem('airnode_my_number');
+    if (!myNumber) {
+      const randomSuffix = Math.floor(1000000 + Math.random() * 9000000);
+      myNumber = `+1 (814) ${randomSuffix}`;
+      localStorage.setItem('airnode_my_number', myNumber);
+    }
+
+    document.getElementById('myNumberDisplay').innerText = myNumber;
+
+    let currentRecipient = null;
+
+    // 2. Open private chat with another number
+    function startPrivateChat() {
+      const recipient = document.getElementById('recipientInput').value.trim();
+      if (!recipient) return alert('Please enter a valid phone number!');
+      if (recipient === myNumber) return alert("You can't message your own number!");
+
+      currentRecipient = recipient;
+      document.getElementById('chatHeader').innerText = `Chatting with: ${currentRecipient}`;
+      document.getElementById('msgInput').disabled = false;
+      document.getElementById('sendBtn').disabled = false;
+      document.getElementById('messagesBox').innerHTML = '';
+
+      // Join direct room with recipient on backend
+      socket.emit('join_chat', { myNumber, recipientNumber: currentRecipient });
+    }
+
+    // 3. Load previous chat history
+    socket.on('load_history', (history) => {
+      const box = document.getElementById('messagesBox');
+      box.innerHTML = '';
+      history.forEach(msg => appendMessage(msg));
+    });
+
+    // 4. Send Message
+    function sendMessage() {
+      const text = document.getElementById('msgInput').value.trim();
+      if (!text || !currentRecipient) return;
+
+      socket.emit('send_private_message', {
+        sender: myNumber,
+        recipient: currentRecipient,
+        message: text
+      });
+
+      document.getElementById('msgInput').value = '';
+    }
+
+    // 5. Receive Message in Real-time
+    socket.on('receive_private_message', (msg) => {
+      appendMessage(msg);
+    });
+
+    function appendMessage(msg) {
+      const box = document.getElementById('messagesBox');
+      const div = document.createElement('div');
+      const isMe = msg.sender === myNumber;
+      
+      div.className = `message ${isMe ? 'sent' : 'received'}`;
+      div.innerText = msg.message;
+      box.appendChild(div);
+      box.scrollTop = box.scrollHeight;
+    }
+  </script>
 </body>
 </html>
