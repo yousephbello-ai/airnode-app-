@@ -58,7 +58,7 @@
     }
     .splash-title { margin-top: 18px; font-size: 22px; font-weight: 700; color: var(--an-text-main); letter-spacing: 1px; }
 
-    /* App Layout */
+    /* Layout */
     .app-container { display: flex; width: 100vw; height: 100vh; height: 100dvh; position: relative; overflow: hidden; }
 
     /* Sidebar */
@@ -81,7 +81,6 @@
     .icon-btn:hover { color: var(--an-neon-cyan); }
     .icon-btn svg { width: 22px; height: 22px; fill: currentColor; }
 
-    /* Search */
     .search-box { padding: 8px 16px; flex-shrink: 0; }
     .search-input-wrapper {
       display: flex; align-items: center; gap: 10px; background: var(--an-card);
@@ -93,7 +92,6 @@
       background: none; border: none; outline: none; color: var(--an-text-main); font-size: 14px; width: 100%;
     }
 
-    /* Filters */
     .filters-row { display: flex; gap: 8px; padding: 10px 16px; overflow-x: auto; flex-shrink: 0; }
     .pill {
       background: var(--an-card); color: var(--an-text-muted); font-size: 13px; font-weight: 600;
@@ -101,7 +99,6 @@
     }
     .pill.active, .pill:hover { background: rgba(0, 242, 254, 0.15); color: var(--an-neon-cyan); border-color: rgba(0, 242, 254, 0.3); }
 
-    /* Chat List */
     .chat-list { flex: 1; overflow-y: auto; padding: 6px 0; }
     .chat-item {
       display: flex; align-items: center; gap: 14px; padding: 12px 18px; cursor: pointer;
@@ -113,7 +110,7 @@
       width: 48px; height: 48px; border-radius: 16px;
       background: linear-gradient(135deg, var(--an-neon-blue), var(--an-accent-purple));
       display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 18px; color: #fff;
-      flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.2); overflow: hidden; background-size: cover; background-position: center;
     }
     .chat-info { flex: 1; min-width: 0; }
     .chat-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
@@ -121,17 +118,15 @@
     .chat-time { font-size: 11px; color: var(--an-text-muted); }
     .chat-last-msg { font-size: 13px; color: var(--an-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
-    /* FAB */
     .fab-btn {
       position: absolute; bottom: 70px; right: 20px; width: 52px; height: 52px;
       background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border-radius: 16px; border: none; color: #0b0f19;
       display: flex; align-items: center; justify-content: center; cursor: pointer;
-      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); transition: transform 0.2s, box-shadow 0.2s; z-index: 10;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); transition: transform 0.2s; z-index: 10;
     }
     .fab-btn:active { transform: scale(0.92); }
     .fab-btn svg { width: 26px; height: 26px; fill: #0b0f19; }
 
-    /* Bottom Nav */
     .bottom-nav {
       display: flex; justify-content: space-around; align-items: center;
       padding: 10px 0 8px; background: var(--an-sidebar); border-top: 1px solid var(--an-border); flex-shrink: 0;
@@ -153,7 +148,6 @@
 
     .messages-container { flex: 1; min-height: 0; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
 
-    /* Message Bubbles */
     .message {
       max-width: 68%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.4;
       position: relative; word-wrap: break-word; display: flex; flex-direction: column;
@@ -168,10 +162,9 @@
     }
     .msg-check { color: var(--an-check); font-weight: bold; font-size: 11px; }
 
-    .message img, .message video { max-width: 100%; border-radius: 10px; margin-top: 6px; }
+    .message img, .message video { max-width: 260px; max-height: 260px; border-radius: 10px; margin-top: 6px; object-fit: cover; }
     .message audio { width: 100%; margin-top: 6px; }
 
-    /* Input Area */
     .input-area {
       padding: 12px 20px; background: var(--an-sidebar); display: flex; align-items: center; gap: 12px;
       border-top: 1px solid var(--an-border); flex-shrink: 0; width: 100%;
@@ -189,7 +182,7 @@
     }
     .send-circle-btn:active { transform: scale(0.92); }
 
-    /* Settings Panel */
+    /* Settings Screen Overlay */
     .settings-panel {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
       background: var(--an-sidebar); z-index: 100; display: flex; flex-direction: column;
@@ -207,22 +200,22 @@
     }
     .thought-bubble {
       background: var(--an-card); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: var(--an-text-muted);
-      margin-bottom: -10px; border: 1px solid var(--an-border); position: relative; z-index: 2;
+      margin-bottom: -10px; border: 1px solid var(--an-border); position: relative; z-index: 2; cursor: pointer;
     }
-    .profile-avatar-wrapper { position: relative; margin-bottom: 12px; }
+    .profile-avatar-wrapper { position: relative; margin-bottom: 12px; cursor: pointer; }
     .profile-avatar {
       width: 86px; height: 86px; border-radius: 50%; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-accent-purple));
       display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: #fff;
+      overflow: hidden; background-size: cover; background-position: center;
     }
     .profile-add-badge {
-      position: absolute; bottom: 2px; right: 2px; width: 24px; height: 24px; background: var(--an-neon-cyan);
-      border-radius: 50%; color: #0b0f19; font-weight: bold; font-size: 16px; display: flex; align-items: center; justify-content: center;
+      position: absolute; bottom: 2px; right: 2px; width: 26px; height: 26px; background: var(--an-neon-cyan);
+      border-radius: 50%; color: #0b0f19; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center;
       border: 2px solid var(--an-sidebar);
     }
     .profile-name { font-size: 20px; font-weight: 700; color: var(--an-text-main); display: flex; align-items: center; gap: 6px; }
     .profile-handle { font-size: 13px; color: var(--an-text-muted); margin-top: 2px; }
 
-    /* Settings List */
     .settings-list { display: flex; flex-direction: column; padding: 8px 0 24px; }
     .settings-item {
       display: flex; align-items: center; gap: 18px; padding: 14px 20px; cursor: pointer; transition: background 0.2s;
@@ -239,15 +232,24 @@
       padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;
     }
 
-    /* Modal Overlay */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 10000; }
-    .modal-overlay.active { display: flex; }
-    .modal-box { background: var(--an-sidebar); width: 340px; padding: 24px; border-radius: 20px; border: 1px solid var(--an-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .modal-box h3 { font-size: 18px; margin-bottom: 14px; color: var(--an-text-main); }
-    .modal-box input { width: 100%; padding: 12px 16px; background: var(--an-card); border: 1px solid var(--an-border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; margin-bottom: 16px; }
-    .modal-box button { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border: none; border-radius: 10px; color: #0b0f19; font-weight: 700; cursor: pointer; }
+    /* Switch Toggle */
+    .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--an-card); transition: .3s; border-radius: 24px; border: 1px solid var(--an-border); }
+    .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+    input:checked + .slider { background-color: var(--an-neon-cyan); }
+    input:checked + .slider:before { transform: translateX(20px); background-color: #0b0f19; }
 
-    /* Responsive */
+    /* Modals */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); display: none; align-items: center; justify-content: center; z-index: 10000; }
+    .modal-overlay.active { display: flex; }
+    .modal-box { background: var(--an-sidebar); width: 360px; max-width: 90%; padding: 24px; border-radius: 20px; border: 1px solid var(--an-border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .modal-box h3 { font-size: 18px; margin-bottom: 14px; color: var(--an-text-main); }
+    .modal-box input, .modal-box select { width: 100%; padding: 12px 16px; background: var(--an-card); border: 1px solid var(--an-border); border-radius: 10px; color: #fff; font-size: 14px; outline: none; margin-bottom: 12px; }
+    .modal-box button { width: 100%; padding: 12px; background: linear-gradient(135deg, var(--an-neon-cyan), var(--an-neon-blue)); border: none; border-radius: 10px; color: #0b0f19; font-weight: 700; cursor: pointer; margin-top: 6px; }
+    .modal-link { display: block; text-align: center; font-size: 12px; color: var(--an-neon-cyan); margin-top: 12px; cursor: pointer; text-decoration: underline; }
+
+    /* Mobile View */
     @media (max-width: 768px) {
       .sidebar { width: 100%; height: 100%; border-right: none; }
       .chat-panel { display: none; width: 100%; height: 100%; }
@@ -266,7 +268,7 @@
     <div class="splash-title">Airnode</div>
   </div>
 
-  <!-- App Container -->
+  <!-- Main App Layout -->
   <div class="app-container">
     
     <!-- Sidebar -->
@@ -283,7 +285,7 @@
         </div>
       </div>
 
-      <!-- Search Input -->
+      <!-- Real-Time Search Box -->
       <div class="search-box">
         <div class="search-input-wrapper">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
@@ -293,41 +295,41 @@
 
       <!-- Filter Pills -->
       <div class="filters-row">
-        <button class="pill active">All</button>
-        <button class="pill">Unread</button>
-        <button class="pill">Favourites</button>
-        <button class="pill">Groups</button>
+        <button class="pill active" onclick="setFilter('all', this)">All</button>
+        <button class="pill" onclick="setFilter('unread', this)">Unread</button>
+        <button class="pill" onclick="setFilter('favourites', this)">Favourites</button>
+        <button class="pill" onclick="setFilter('groups', this)">Groups</button>
       </div>
 
-      <!-- Chat List -->
+      <!-- Conversations List -->
       <div class="chat-list" id="chatsListContainer"></div>
 
-      <!-- FAB -->
+      <!-- Floating Action Button -->
       <button class="fab-btn" onclick="openNewChatModal()" title="Start New Chat">
         <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
       </button>
 
-      <!-- Bottom Nav -->
+      <!-- Bottom Nav Tabs -->
       <div class="bottom-nav">
-        <button class="nav-tab active">
+        <button class="nav-tab active" id="tabChats" onclick="switchNavTab('chats')">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
           <span>Chats</span>
         </button>
-        <button class="nav-tab">
+        <button class="nav-tab" id="tabUpdates" onclick="switchNavTab('updates')">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
           <span>Updates</span>
         </button>
-        <button class="nav-tab">
+        <button class="nav-tab" id="tabChannels" onclick="switchNavTab('channels')">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
           <span>Channels</span>
         </button>
-        <button class="nav-tab" onclick="openSettings()">
+        <button class="nav-tab" id="tabSettings" onclick="openSettings()">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
           <span>Settings</span>
         </button>
       </div>
 
-      <!-- Settings Overlay -->
+      <!-- Settings Panel -->
       <div class="settings-panel" id="settingsPanel">
         <div class="settings-header">
           <button class="icon-btn" onclick="closeSettings()">
@@ -337,64 +339,65 @@
         </div>
 
         <div class="profile-card">
-          <div class="thought-bubble">Share a thought!</div>
-          <div class="profile-avatar-wrapper">
+          <div class="thought-bubble" onclick="changeThought()">Share a thought!</div>
+          <div class="profile-avatar-wrapper" onclick="triggerProfilePicUpload()">
             <div class="profile-avatar" id="settingsAvatar">A</div>
             <div class="profile-add-badge">+</div>
           </div>
-          <div class="profile-name" id="settingsName">User Name</div>
-          <div class="profile-handle" id="settingsHandle">@user_handle</div>
+          <input type="file" id="profilePicInput" accept="image/*" style="display: none;" onchange="handleProfilePicChange(event)">
+          <div class="profile-name" id="settingsName">User Account</div>
+          <div class="profile-handle" id="settingsHandle">@user</div>
         </div>
 
         <div class="settings-list">
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v2h2v-2h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Account</div>
-              <div class="settings-sub">Security notifications, change number</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
+          <div class="settings-item" onclick="openPrivacyModal()">
             <div class="settings-icon">
               <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>
             </div>
             <div class="settings-text">
-              <div class="settings-title">Privacy</div>
-              <div class="settings-sub">Blocked accounts, disappearing messages</div>
+              <div class="settings-title">Privacy & Security</div>
+              <div class="settings-sub">Disappearing messages, security controls</div>
             </div>
           </div>
 
-          <div class="settings-item">
-            <div class="settings-icon">
-              <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-            </div>
-            <div class="settings-text">
-              <div class="settings-title">Chats</div>
-              <div class="settings-sub">Theme, wallpapers, chat history</div>
-            </div>
-          </div>
-
-          <div class="settings-item">
+          <div class="settings-item" onclick="toggleTheme()">
             <div class="settings-icon">
               <svg viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 19.4c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l1.9-1.9C9.21 19.55 10.56 20 12 20c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 15c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6z"/></svg>
             </div>
             <div class="settings-text">
               <div class="settings-title">Appearance</div>
-              <div class="settings-sub">Chat theme, app icon, app theme</div>
+              <div class="settings-sub">Toggle Dark & Light mode</div>
             </div>
             <button class="theme-toggle-btn" onclick="toggleTheme(event)">
               <span id="themeToggleLabel">🌙 Dark</span>
             </button>
+          </div>
+
+          <div class="settings-item" onclick="sendHelpEmail()">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title">Help & Feedback</div>
+              <div class="settings-sub">Email support directly at yousephbello@gmail.com</div>
+            </div>
+          </div>
+
+          <div class="settings-item" onclick="openAuthModal(true)">
+            <div class="settings-icon">
+              <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            </div>
+            <div class="settings-text">
+              <div class="settings-title" style="color: #ef4444;">Switch or Reset Account</div>
+              <div class="settings-sub">Log into another account or create a new profile</div>
+            </div>
           </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Right Chat Screen -->
+    <!-- Active Chat Panel -->
     <div class="chat-panel">
       <div class="chat-header">
         <div class="chat-header-left">
@@ -412,12 +415,12 @@
       <!-- Messages Stream -->
       <div class="messages-container" id="messagesBox"></div>
 
-      <!-- Input Bar -->
+      <!-- Message Input Bar -->
       <div class="input-area">
         <button class="icon-btn" onclick="triggerFileUpload()" id="attachBtn" disabled>
           <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
         </button>
-        <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)">
+        <input type="file" id="fileInput" style="display: none;" onchange="sendFile(event)" accept="image/*,video/*,audio/*">
 
         <input type="text" id="msgInput" placeholder="Message Airnode..." disabled onkeypress="handleKeyPress(event)">
         
@@ -429,32 +432,91 @@
 
   </div>
 
-  <!-- New Chat Modal -->
+  <!-- Start New Chat Modal -->
   <div class="modal-overlay" id="newChatModal">
     <div class="modal-box">
       <h3>New Airnode Chat</h3>
-      <input type="text" id="newNumberInput" placeholder="Enter recipient's number (+1...)">
+      <input type="text" id="newNumberInput" placeholder="Enter Gmail address or phone number">
       <button onclick="startNewChat()">Start Chat</button>
+      <button onclick="closeNewChatModal()" style="background: none; color: var(--an-text-muted); margin-top: 4px;">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Privacy Settings Modal -->
+  <div class="modal-overlay" id="privacyModal">
+    <div class="modal-box">
+      <h3>Privacy Settings</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin: 16px 0;">
+        <div>
+          <div style="font-weight: 600; font-size: 14px;">Disappearing Messages</div>
+          <div style="font-size: 11px; color: var(--an-text-muted);">Auto-delete new messages after 30 sec</div>
+        </div>
+        <label class="switch">
+          <input type="checkbox" id="disappearingToggle" onchange="toggleDisappearing(this.checked)">
+          <span class="slider"></span>
+        </label>
+      </div>
+      <button onclick="closePrivacyModal()">Done</button>
+    </div>
+  </div>
+
+  <!-- Registration/Login Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-box">
+      <h3 id="authTitle">Create Your Account</h3>
+      
+      <div id="authFormFields">
+        <input type="text" id="authAccountInput" placeholder="Enter Gmail or Phone Number">
+        <input type="password" id="authPasswordInput" placeholder="Create Password">
+        
+        <label style="font-size: 11px; color: var(--an-text-muted); display: block; margin-bottom: 4px;">Security Question (For Password Recovery):</label>
+        <select id="authSecQuestion">
+          <option value="pet">What was the name of your first pet?</option>
+          <option value="city">In what city were you born?</option>
+          <option value="food">What is your favorite food?</option>
+        </select>
+        <input type="text" id="authSecAnswer" placeholder="Your Answer">
+        
+        <button onclick="submitAuth(false)">Register Account</button>
+        <span class="modal-link" onclick="toggleAuthMode(true)">Already have an account? Login</span>
+      </div>
+
+      <div id="forgotFormFields" style="display: none;">
+        <input type="text" id="forgotAccountInput" placeholder="Enter your Gmail or Phone">
+        <label style="font-size: 11px; color: var(--an-text-muted); display: block; margin-bottom: 4px;">Answer Security Question:</label>
+        <select id="forgotSecQuestion">
+          <option value="pet">What was the name of your first pet?</option>
+          <option value="city">In what city were you born?</option>
+          <option value="food">What is your favorite food?</option>
+        </select>
+        <input type="text" id="forgotSecAnswer" placeholder="Your Security Answer">
+        <input type="password" id="forgotNewPassword" placeholder="Enter New Password">
+        
+        <button onclick="resetPassword()">Reset Password</button>
+        <span class="modal-link" onclick="toggleForgotMode(false)">Back to Login</span>
+      </div>
     </div>
   </div>
 
   <script>
-    // Sanitizes phone numbers for socket routing
-    function cleanNumber(num) {
-      return num ? String(num).replace(/[^0-9+]/g, '') : '';
+    function cleanIdentifier(id) {
+      if (!id) return '';
+      return String(id).toLowerCase().trim().replace(/[^a-z0-9@.]/g, '');
     }
 
-    // Hide Splash Screen
+    const socket = io();
+
+    // Application Startup
     window.addEventListener('load', () => {
       setTimeout(() => {
         document.getElementById('splash-screen').style.opacity = '0';
         document.getElementById('splash-screen').style.visibility = 'hidden';
       }, 800);
+
+      initUserAccount();
     });
 
-    const socket = io();
-
-    // Theme Setup
+    // Theme Management
     let savedTheme = localStorage.getItem('airnode_theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     updateThemeLabel();
@@ -469,81 +531,270 @@
 
     function updateThemeLabel() {
       const btnLabel = document.getElementById('themeToggleLabel');
-      if (btnLabel) {
-        btnLabel.innerText = savedTheme === 'dark' ? '🌙 Dark' : '☀️ Light';
+      if (btnLabel) btnLabel.innerText = savedTheme === 'dark' ? '🌙 Dark' : '☀️ Light';
+    }
+
+    // Account State Management
+    let currentUser = null;
+    let disappearEnabled = localStorage.getItem('airnode_disappear') === 'true';
+
+    function initUserAccount() {
+      const stored = localStorage.getItem('airnode_user_profile');
+      if (!stored) {
+        openAuthModal(false);
+      } else {
+        currentUser = JSON.parse(stored);
+        updateProfileUI();
+      }
+      document.getElementById('disappearingToggle').checked = disappearEnabled;
+    }
+
+    function updateProfileUI() {
+      if (!currentUser) return;
+      document.getElementById('settingsName').innerText = currentUser.identifier;
+      document.getElementById('settingsHandle').innerText = `@${cleanIdentifier(currentUser.identifier)}`;
+      
+      const avatarEl = document.getElementById('settingsAvatar');
+      if (currentUser.photo) {
+        avatarEl.style.backgroundImage = `url(${currentUser.photo})`;
+        avatarEl.innerText = '';
+      } else {
+        avatarEl.style.backgroundImage = 'none';
+        avatarEl.innerText = currentUser.identifier.substring(0, 2).toUpperCase();
       }
     }
 
-    // Assign / retrieve persistent user identity
-    let myNumber = localStorage.getItem('airnode_my_number');
-    if (!myNumber) {
-      myNumber = `+1 (814) ${Math.floor(1000000 + Math.random() * 9000000)}`;
-      localStorage.setItem('airnode_my_number', myNumber);
+    function triggerProfilePicUpload() {
+      document.getElementById('profilePicInput').click();
     }
 
-    document.getElementById('settingsName').innerText = myNumber;
-    document.getElementById('settingsHandle').innerText = `@${cleanNumber(myNumber)}`;
-    document.getElementById('settingsAvatar').innerText = myNumber.substring(myNumber.length - 2);
+    function handleProfilePicChange(e) {
+      const file = e.target.files[0];
+      if (!file) return;
 
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        currentUser.photo = evt.target.result;
+        localStorage.setItem('airnode_user_profile', JSON.stringify(currentUser));
+        updateProfileUI();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function changeThought() {
+      const thought = prompt("Share a status/thought:");
+      if (thought) document.querySelector('.thought-bubble').innerText = thought;
+    }
+
+    // Privacy Modal Controls
+    function openPrivacyModal() { document.getElementById('privacyModal').classList.add('active'); }
+    function closePrivacyModal() { document.getElementById('privacyModal').classList.remove('active'); }
+
+    function toggleDisappearing(enabled) {
+      disappearEnabled = enabled;
+      localStorage.setItem('airnode_disappear', enabled);
+    }
+
+    // Support Email Trigger
+    function sendHelpEmail() {
+      window.location.href = "mailto:yousephbello@gmail.com?subject=Airnode%20Support%20&%20Feedback";
+    }
+
+    // Auth & Password Recovery Logic
+    let isLoginMode = false;
+
+    function openAuthModal(forceSwitch = false) {
+      if (forceSwitch) isLoginMode = true;
+      document.getElementById('authModal').classList.add('active');
+      toggleAuthMode(isLoginMode);
+    }
+
+    function toggleAuthMode(login) {
+      isLoginMode = login;
+      document.getElementById('forgotFormFields').style.display = 'none';
+      document.getElementById('authFormFields').style.display = 'block';
+      
+      if (login) {
+        document.getElementById('authTitle').innerText = 'Login to Airnode';
+        document.getElementById('authFormFields').innerHTML = `
+          <input type="text" id="authAccountInput" placeholder="Gmail or Phone Number">
+          <input type="password" id="authPasswordInput" placeholder="Password">
+          <button onclick="submitAuth(true)">Login</button>
+          <span class="modal-link" onclick="toggleForgotMode(true)">Forgot Password?</span>
+          <span class="modal-link" onclick="toggleAuthMode(false)">Need an account? Register</span>
+        `;
+      } else {
+        document.getElementById('authTitle').innerText = 'Create Your Account';
+        document.getElementById('authFormFields').innerHTML = `
+          <input type="text" id="authAccountInput" placeholder="Enter Gmail or Phone Number">
+          <input type="password" id="authPasswordInput" placeholder="Create Password">
+          <label style="font-size: 11px; color: var(--an-text-muted); display: block; margin-bottom: 4px;">Security Question:</label>
+          <select id="authSecQuestion">
+            <option value="pet">What was the name of your first pet?</option>
+            <option value="city">In what city were you born?</option>
+            <option value="food">What is your favorite food?</option>
+          </select>
+          <input type="text" id="authSecAnswer" placeholder="Your Answer">
+          <button onclick="submitAuth(false)">Register Account</button>
+          <span class="modal-link" onclick="toggleAuthMode(true)">Already have an account? Login</span>
+        `;
+      }
+    }
+
+    function toggleForgotMode(show) {
+      document.getElementById('authFormFields').style.display = show ? 'none' : 'block';
+      document.getElementById('forgotFormFields').style.display = show ? 'block' : 'none';
+      document.getElementById('authTitle').innerText = show ? 'Recover Password' : (isLoginMode ? 'Login to Airnode' : 'Create Your Account');
+    }
+
+    function submitAuth(isLogin) {
+      const id = document.getElementById('authAccountInput').value.trim();
+      const pwd = document.getElementById('authPasswordInput').value.trim();
+
+      if (!id || !pwd) return alert('Please enter both identity and password.');
+
+      let accounts = JSON.parse(localStorage.getItem('airnode_accounts') || '{}');
+      const cleanId = cleanIdentifier(id);
+
+      if (isLogin) {
+        if (!accounts[cleanId] || accounts[cleanId].password !== pwd) {
+          return alert('Invalid Account Credentials or Account does not exist!');
+        }
+        currentUser = accounts[cleanId];
+      } else {
+        const q = document.getElementById('authSecQuestion').value;
+        const a = document.getElementById('authSecAnswer').value.trim().toLowerCase();
+        if (!a) return alert('Security question answer is required!');
+
+        currentUser = { identifier: id, password: pwd, question: q, answer: a, photo: null };
+        accounts[cleanId] = currentUser;
+        localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
+      }
+
+      localStorage.setItem('airnode_user_profile', JSON.stringify(currentUser));
+      updateProfileUI();
+      document.getElementById('authModal').classList.remove('active');
+    }
+
+    function resetPassword() {
+      const id = document.getElementById('forgotAccountInput').value.trim();
+      const q = document.getElementById('forgotSecQuestion').value;
+      const a = document.getElementById('forgotSecAnswer').value.trim().toLowerCase();
+      const newPwd = document.getElementById('forgotNewPassword').value.trim();
+
+      if (!id || !a || !newPwd) return alert('Please complete all security fields!');
+
+      let accounts = JSON.parse(localStorage.getItem('airnode_accounts') || '{}');
+      const cleanId = cleanIdentifier(id);
+
+      if (!accounts[cleanId]) return alert('Account not found!');
+      
+      if (accounts[cleanId].question === q && accounts[cleanId].answer === a) {
+        accounts[cleanId].password = newPwd;
+        localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
+        alert('Password successfully reset! You can now log in.');
+        toggleForgotMode(false);
+        toggleAuthMode(true);
+      } else {
+        alert('Incorrect security question answer!');
+      }
+    }
+
+    // Settings Drawer Controls
     function openSettings() { document.getElementById('settingsPanel').classList.add('active'); }
     function closeSettings() { document.getElementById('settingsPanel').classList.remove('active'); }
 
-    // Register user with backend on Socket connection
-    socket.on('connect', () => {
-      console.log('🔌 Connected to server');
-      socket.emit('register_user', cleanNumber(myNumber));
-    });
+    // Navigation Tabs Handler
+    function switchNavTab(tabName) {
+      document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+      if (tabName === 'chats') {
+        document.getElementById('tabChats').classList.add('active');
+        renderChatList();
+      } else if (tabName === 'updates') {
+        document.getElementById('tabUpdates').classList.add('active');
+        alert('Updates Feed coming soon!');
+      } else if (tabName === 'channels') {
+        document.getElementById('tabChannels').classList.add('active');
+        alert('Channels Directory coming soon!');
+      }
+    }
 
+    // Recent Chats & Filtering
     let recentChats = JSON.parse(localStorage.getItem('airnode_recent_chats') || '[]');
     let activeRecipient = null;
+    let currentFilter = 'all';
 
     renderChatList();
+
+    function setFilter(filterType, elem) {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      elem.classList.add('active');
+      currentFilter = filterType;
+      filterChats();
+    }
+
+    function filterChats() {
+      const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+      let filtered = recentChats.filter(chat => {
+        const matchesSearch = chat.number.toLowerCase().includes(searchQuery) || 
+                              (chat.lastMsg && chat.lastMsg.toLowerCase().includes(searchQuery));
+        if (currentFilter === 'all') return matchesSearch;
+        if (currentFilter === 'unread') return matchesSearch && chat.unread;
+        if (currentFilter === 'favourites') return matchesSearch && chat.favourite;
+        if (currentFilter === 'groups') return matchesSearch && chat.isGroup;
+        return matchesSearch;
+      });
+
+      renderChatList(filtered);
+    }
 
     function openNewChatModal() { document.getElementById('newChatModal').classList.add('active'); }
     function closeNewChatModal() { document.getElementById('newChatModal').classList.remove('active'); }
 
     function startNewChat() {
-      const number = document.getElementById('newNumberInput').value.trim();
-      if (!number) return alert('Enter a phone number!');
-      if (cleanNumber(number) === cleanNumber(myNumber)) return alert("You can't chat with yourself!");
+      const target = document.getElementById('newNumberInput').value.trim();
+      if (!target) return alert('Enter recipient details!');
+      if (currentUser && cleanIdentifier(target) === cleanIdentifier(currentUser.identifier)) {
+        return alert("You cannot start a conversation with yourself!");
+      }
 
-      addContactToRecent(number, "Tap to send a message...");
+      addContactToRecent(target, "Tap to send a message...");
       closeNewChatModal();
-      openChat(number);
+      openChat(target);
     }
 
-    function addContactToRecent(number, lastMsg = '') {
-      const cleanTarget = cleanNumber(number);
-      const existing = recentChats.find(c => cleanNumber(c.number) === cleanTarget);
+    function addContactToRecent(target, lastMsg = '') {
+      const cleanTarget = cleanIdentifier(target);
+      const existing = recentChats.find(c => cleanIdentifier(c.number) === cleanTarget);
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       if (existing) {
         existing.lastMsg = lastMsg || existing.lastMsg;
         existing.time = now;
       } else {
-        recentChats.unshift({ number, lastMsg, time: now });
+        recentChats.unshift({ number: target, lastMsg, time: now, favourite: false, unread: false, isGroup: false });
       }
 
       localStorage.setItem('airnode_recent_chats', JSON.stringify(recentChats));
-      renderChatList();
+      filterChats();
     }
 
-    function renderChatList() {
+    function renderChatList(listToRender = recentChats) {
       const container = document.getElementById('chatsListContainer');
       container.innerHTML = '';
 
-      if (recentChats.length === 0) {
-        container.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--an-text-muted); font-size: 13px;">No active chats. Tap + to start a conversation!</div>`;
+      if (listToRender.length === 0) {
+        container.innerHTML = `<div style="padding: 24px; text-align: center; color: var(--an-text-muted); font-size: 13px;">No conversations found.</div>`;
         return;
       }
 
-      recentChats.forEach(chat => {
+      listToRender.forEach(chat => {
         const div = document.createElement('div');
-        div.className = `chat-item ${cleanNumber(activeRecipient) === cleanNumber(chat.number) ? 'active' : ''}`;
+        div.className = `chat-item ${cleanIdentifier(activeRecipient) === cleanIdentifier(chat.number) ? 'active' : ''}`;
         div.onclick = () => openChat(chat.number);
 
         div.innerHTML = `
-          <div class="chat-avatar">${chat.number.substring(chat.number.length - 2)}</div>
+          <div class="chat-avatar">${chat.number.substring(0, 2).toUpperCase()}</div>
           <div class="chat-info">
             <div class="chat-top-row">
               <span class="chat-name">${chat.number}</span>
@@ -557,134 +808,125 @@
     }
 
     function openChat(recipientNumber) {
+      if (!currentUser) return openAuthModal(false);
+
       activeRecipient = recipientNumber;
       document.getElementById('activeChatName').innerText = recipientNumber;
-      document.getElementById('activeChatAvatar').innerText = recipientNumber.substring(recipientNumber.length - 2);
+      document.getElementById('activeChatAvatar').innerText = recipientNumber.substring(0, 2).toUpperCase();
 
       document.getElementById('msgInput').disabled = false;
       document.getElementById('sendBtn').disabled = false;
       document.getElementById('attachBtn').disabled = false;
 
       document.body.classList.add('mobile-chat-active');
-      renderChatList();
-    }
+      filterChats();
 
-    function closeMobileChat() { document.body.classList.remove('mobile-chat-active'); }
-
-    function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
-
-    // Send Message Handler (Starts with Single Tick ✓)
-    function sendMessage() {
-      const text = document.getElementById('msgInput').value.trim();
-      if (!text || !activeRecipient) return;
-
-      const messageId = `msg_${Date.now()}`;
-      const payload = {
-        messageId,
-        senderId: cleanNumber(myNumber),
-        recipientId: cleanNumber(activeRecipient),
-        text
-      };
-
-      // Append locally with Single Tick ✓
-      appendMessage({ ...payload, isMe: true, status: 'sent' });
-      addContactToRecent(activeRecipient, text);
-      document.getElementById('msgInput').value = '';
-
-      // Emit to backend socket
-      socket.emit('send_message', payload, (res) => {
-        if (!res || !res.success) {
-          const tickEl = document.getElementById(`tick-${messageId}`);
-          if (tickEl) tickEl.innerText = '❌';
-        }
+      socket.emit('join_chat', { 
+        myNumber: cleanIdentifier(currentUser.identifier), 
+        recipientNumber: cleanIdentifier(activeRecipient) 
       });
     }
 
-    // Listen for incoming messages & send ACK back to server
-    socket.on('receive_message', (msgPayload, ackCallback) => {
-      const msgSender = cleanNumber(msgPayload.senderId);
-      const currentActive = cleanNumber(activeRecipient);
+    function closeMobileChat() { document.body.classList.remove('mobile-chat-active'); }
+    function handleKeyPress(e) { if (e.key === 'Enter') sendMessage(); }
 
-      // Render on screen if chatting with sender
-      if (msgSender === currentActive) {
-        appendMessage({ ...msgPayload, message: msgPayload.text, isMe: false });
-      }
+    function sendMessage() {
+      const text = document.getElementById('msgInput').value.trim();
+      if (!text || !activeRecipient || !currentUser) return;
 
-      addContactToRecent(msgPayload.senderId, msgPayload.text || 'Attachment');
+      socket.emit('send_private_message', { 
+        sender: cleanIdentifier(currentUser.identifier), 
+        recipient: cleanIdentifier(activeRecipient), 
+        message: text 
+      });
 
-      // Send ACK back so sender gets Double Ticks (✓✓)
-      if (typeof ackCallback === 'function') {
-        ackCallback({ received: true });
-      }
+      addContactToRecent(activeRecipient, text);
+      document.getElementById('msgInput').value = '';
+    }
+
+    socket.on('load_history', (history) => {
+      const box = document.getElementById('messagesBox');
+      box.innerHTML = '';
+      if (Array.isArray(history)) history.forEach(msg => appendMessage(msg));
     });
 
-    // Update status from Single Tick (✓) to Double Ticks (✓✓)
-    socket.on('message_status_update', ({ messageId, status }) => {
-      if (status === 'delivered') {
-        const tickEl = document.getElementById(`tick-${messageId}`);
-        if (tickEl) {
-          tickEl.innerText = '✓✓';
-        }
+    socket.on('receive_private_message', (msg) => {
+      if (!currentUser) return;
+
+      const msgSender = cleanIdentifier(msg.sender);
+      const currentActive = cleanIdentifier(activeRecipient);
+      const currentMe = cleanIdentifier(currentUser.identifier);
+
+      if (msgSender === currentActive || msgSender === currentMe) {
+        appendMessage(msg);
       }
+
+      const targetNumber = msgSender === currentMe ? msg.recipient : msg.sender;
+      addContactToRecent(targetNumber, msg.message || 'Media File');
     });
 
     function appendMessage(msg) {
       const box = document.getElementById('messagesBox');
       const div = document.createElement('div');
-      const isMe = msg.isMe !== undefined ? msg.isMe : (cleanNumber(msg.senderId) === cleanNumber(myNumber));
+      const isMe = cleanIdentifier(msg.sender) === cleanIdentifier(currentUser ? currentUser.identifier : '');
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
       div.className = `message ${isMe ? 'sent' : 'received'}`;
-      if (msg.messageId) div.id = msg.messageId;
 
-      const textContent = msg.text || msg.message;
-      if (textContent) {
+      if (msg.message) {
         const p = document.createElement('div');
-        p.innerText = textContent;
+        p.innerText = msg.message;
         div.appendChild(p);
       }
 
       if (msg.file) {
-        if (msg.file.type.startsWith('image/')) {
-          const img = document.createElement('img'); img.src = msg.file.data; div.appendChild(img);
-        } else if (msg.file.type.startsWith('video/')) {
-          const video = document.createElement('video'); video.src = msg.file.data; video.controls = true; div.appendChild(video);
-        } else if (msg.file.type.startsWith('audio/')) {
-          const audio = document.createElement('audio'); audio.src = msg.file.data; audio.controls = true; div.appendChild(audio);
+        if (msg.file.type && msg.file.type.startsWith('image/')) {
+          const img = document.createElement('img'); 
+          img.src = msg.file.data; 
+          div.appendChild(img);
+        } else if (msg.file.type && msg.file.type.startsWith('video/')) {
+          const video = document.createElement('video'); 
+          video.src = msg.file.data; 
+          video.controls = true; 
+          div.appendChild(video);
+        } else if (msg.file.type && msg.file.type.startsWith('audio/')) {
+          const audio = document.createElement('audio'); 
+          audio.src = msg.file.data; 
+          audio.controls = true; 
+          div.appendChild(audio);
         }
       }
 
       const meta = document.createElement('div');
       meta.className = 'msg-meta';
-      const tickSymbol = msg.status === 'delivered' ? '✓✓' : '✓';
-      meta.innerHTML = `${timeStr} ${isMe ? `<span class="msg-check" id="tick-${msg.messageId || ''}">${tickSymbol}</span>` : ''}`;
+      meta.innerHTML = `${timeStr} ${isMe ? '<span class="msg-check">✓✓</span>' : ''}`;
       div.appendChild(meta);
 
       box.appendChild(div);
       box.scrollTop = box.scrollHeight;
+
+      if (disappearEnabled) {
+        setTimeout(() => {
+          div.remove();
+        }, 30000);
+      }
     }
 
     function triggerFileUpload() { document.getElementById('fileInput').click(); }
     
     function sendFile(e) {
       const file = e.target.files[0];
-      if (!file || !activeRecipient) return;
+      if (!file || !activeRecipient || !currentUser) return;
 
       const reader = new FileReader();
       reader.onload = function(evt) {
-        const messageId = `msg_${Date.now()}`;
-        const payload = {
-          messageId,
-          senderId: cleanNumber(myNumber),
-          recipientId: cleanNumber(activeRecipient),
-          text: '',
+        socket.emit('send_private_message', {
+          sender: cleanIdentifier(currentUser.identifier),
+          recipient: cleanIdentifier(activeRecipient),
+          message: '',
           file: { data: evt.target.result, name: file.name, type: file.type }
-        };
-
-        appendMessage({ ...payload, isMe: true, status: 'sent' });
+        });
         addContactToRecent(activeRecipient, '📷 Attachment');
-
-        socket.emit('send_message', payload);
       };
       reader.readAsDataURL(file);
     }
