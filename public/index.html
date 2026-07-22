@@ -46,6 +46,26 @@
     html, body { height: 100%; width: 100%; overflow: hidden; background: var(--an-bg-main); color: var(--an-text-main); }
     body { display: flex; transition: background 0.3s, color 0.3s; }
 
+    /* Gold Verification Badge Styling */
+    .gold-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #ffd700, #ffa500);
+      border-radius: 50%;
+      margin-left: 5px;
+      vertical-align: middle;
+      box-shadow: 0 0 6px rgba(255, 215, 0, 0.6);
+      flex-shrink: 0;
+    }
+    .gold-badge svg {
+      width: 10px;
+      height: 10px;
+      fill: #000;
+    }
+
     /* Splash Screen */
     #splash-screen {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -114,7 +134,7 @@
     }
     .chat-info { flex: 1; min-width: 0; }
     .chat-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-    .chat-name { font-size: 15px; font-weight: 600; color: var(--an-text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+    .chat-name { font-size: 15px; font-weight: 600; color: var(--an-text-main); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: flex; align-items: center; }
     .chat-time { font-size: 11px; color: var(--an-text-muted); }
     .chat-last-msg { font-size: 13px; color: var(--an-text-muted); text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 
@@ -401,7 +421,7 @@
           </button>
           <div class="chat-avatar" id="activeChatAvatar">?</div>
           <div>
-            <div style="font-weight: 600; font-size: 16px;" id="activeChatName">Select a contact</div>
+            <div style="font-weight: 600; font-size: 16px; display: flex; align-items: center;" id="activeChatName">Select a contact</div>
             <div style="font-size: 11px; color: var(--an-neon-cyan);" id="activeChatStatus">online</div>
           </div>
         </div>
@@ -467,7 +487,7 @@
   <!-- Registration/Login Modal -->
   <div class="modal-overlay" id="authModal">
     <div class="modal-box">
-      <h3 id="authTitle">Create Your Account</h3>
+      <h3 id="authTitle">Create Owner Account</h3>
       
       <div id="authFormFields">
         <input type="text" id="authAccountInput" placeholder="Enter Gmail or Phone Number">
@@ -503,6 +523,12 @@
   </div>
 
   <script>
+    // Gold Verified Badge HTML Snippet
+    const GOLD_VERIFIED_BADGE = `
+      <span class="gold-badge" title="Verified Owner Account">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </span>`;
+
     // Universal Identifier Sanitizer (strips '+', spaces, and symbols)
     function cleanIdentifier(id) {
       if (!id) return '';
@@ -544,11 +570,38 @@
     let disappearEnabled = localStorage.getItem('airnode_disappear') === 'true';
 
     function initUserAccount() {
+      let accounts = JSON.parse(localStorage.getItem('airnode_accounts') || '{}');
+      const ownerEmail = "yousephbello@gmail.com";
+      const cleanOwnerId = cleanIdentifier(ownerEmail);
+
+      // Auto-register/verify owner account locally if not present
+      if (!accounts[cleanOwnerId]) {
+        accounts[cleanOwnerId] = {
+          identifier: ownerEmail,
+          password: "siscom",
+          question: "pet",
+          answer: "owner",
+          photo: null,
+          isOwner: true
+        };
+        localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
+      } else {
+        // Ensure owner privilege & gold badge remain active
+        accounts[cleanOwnerId].isOwner = true;
+        localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
+      }
+
       const stored = localStorage.getItem('airnode_user_profile');
       if (!stored) {
-        openAuthModal(false);
+        currentUser = accounts[cleanOwnerId];
+        localStorage.setItem('airnode_user_profile', JSON.stringify(currentUser));
+        updateProfileUI();
       } else {
         currentUser = JSON.parse(stored);
+        if (cleanIdentifier(currentUser.identifier) === cleanOwnerId) {
+          currentUser.isOwner = true;
+          localStorage.setItem('airnode_user_profile', JSON.stringify(currentUser));
+        }
         updateProfileUI();
       }
       document.getElementById('disappearingToggle').checked = disappearEnabled;
@@ -556,7 +609,10 @@
 
     function updateProfileUI() {
       if (!currentUser) return;
-      document.getElementById('settingsName').innerText = currentUser.identifier;
+      
+      const profileNameEl = document.getElementById('settingsName');
+      profileNameEl.innerHTML = `<span>${currentUser.identifier}</span> ${currentUser.isOwner ? GOLD_VERIFIED_BADGE : ''}`;
+      
       document.getElementById('settingsHandle').innerText = `@${cleanIdentifier(currentUser.identifier)}`;
       
       const avatarEl = document.getElementById('settingsAvatar');
@@ -651,7 +707,7 @@
           <span onclick="toggleAuthMode(false)" style="display:block; text-align:center; font-size:12px; color:var(--an-neon-cyan); margin-top:8px; cursor:pointer; text-decoration:underline;">Need an account? Register</span>
         `;
       } else {
-        document.getElementById('authTitle').innerText = 'Create Your Account';
+        document.getElementById('authTitle').innerText = 'Create Owner Account';
         document.getElementById('authFormFields').innerHTML = `
           <input type="text" id="authAccountInput" placeholder="Enter Gmail or Phone Number">
           <input type="password" id="authPasswordInput" placeholder="Create Password">
@@ -671,7 +727,7 @@
     function toggleForgotMode(show) {
       document.getElementById('authFormFields').style.display = show ? 'none' : 'block';
       document.getElementById('forgotFormFields').style.display = show ? 'block' : 'none';
-      document.getElementById('authTitle').innerText = show ? 'Recover Password' : (isLoginMode ? 'Login to Airnode' : 'Create Your Account');
+      document.getElementById('authTitle').innerText = show ? 'Recover Password' : (isLoginMode ? 'Login to Airnode' : 'Create Owner Account');
     }
 
     function submitAuth(isLogin) {
@@ -693,7 +749,8 @@
         const a = document.getElementById('authSecAnswer').value.trim().toLowerCase();
         if (!a) return alert('Security question answer is required!');
 
-        currentUser = { identifier: id, password: pwd, question: q, answer: a, photo: null };
+        const isOwner = cleanId === cleanIdentifier("yousephbello@gmail.com");
+        currentUser = { identifier: id, password: pwd, question: q, answer: a, photo: null, isOwner: isOwner };
         accounts[cleanId] = currentUser;
         localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
       }
@@ -790,16 +847,19 @@
       openChat(target);
     }
 
-    function addContactToRecent(target, lastMsg = '') {
+    function addContactToRecent(target, lastMsg = '', isOwnerContact = false) {
       const cleanTarget = cleanIdentifier(target);
       const existing = recentChats.find(c => cleanIdentifier(c.number) === cleanTarget);
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
+      const isOwner = isOwnerContact || cleanTarget === cleanIdentifier("yousephbello@gmail.com");
+
       if (existing) {
         existing.lastMsg = lastMsg || existing.lastMsg;
         existing.time = now;
+        if (isOwner) existing.isOwner = true;
       } else {
-        recentChats.unshift({ number: target, lastMsg, time: now, favourite: false, unread: false, isGroup: false });
+        recentChats.unshift({ number: target, lastMsg, time: now, favourite: false, unread: false, isGroup: false, isOwner: isOwner });
       }
 
       localStorage.setItem('airnode_recent_chats', JSON.stringify(recentChats));
@@ -820,11 +880,13 @@
         div.className = `chat-item ${cleanIdentifier(activeRecipient) === cleanIdentifier(chat.number) ? 'active' : ''}`;
         div.onclick = () => openChat(chat.number);
 
+        const isOwnerBadge = (currentUser && cleanIdentifier(chat.number) === cleanIdentifier(currentUser.identifier) && currentUser.isOwner) || chat.isOwner || cleanIdentifier(chat.number) === cleanIdentifier("yousephbello@gmail.com");
+
         div.innerHTML = `
           <div class="chat-avatar">${chat.number.substring(0, 2).toUpperCase()}</div>
           <div class="chat-info">
             <div class="chat-top-row">
-              <span class="chat-name">${chat.number}</span>
+              <span class="chat-name">${chat.number} ${isOwnerBadge ? GOLD_VERIFIED_BADGE : ''}</span>
               <span class="chat-time">${chat.time || ''}</span>
             </div>
             <div class="chat-last-msg">${chat.lastMsg || 'Tap to chat'}</div>
@@ -837,10 +899,12 @@
     function openChat(recipientNumber) {
       if (!currentUser) return openAuthModal(false);
 
-      // Clean active recipient state
       activeRecipient = cleanIdentifier(recipientNumber);
       
-      document.getElementById('activeChatName').innerText = recipientNumber;
+      const activeNameHeader = document.getElementById('activeChatName');
+      const isOwnerAccount = activeRecipient === cleanIdentifier("yousephbello@gmail.com") || (currentUser && activeRecipient === cleanIdentifier(currentUser.identifier) && currentUser.isOwner);
+      
+      activeNameHeader.innerHTML = `${recipientNumber} ${isOwnerAccount ? GOLD_VERIFIED_BADGE : ''}`;
       document.getElementById('activeChatAvatar').innerText = recipientNumber.substring(0, 2).toUpperCase();
 
       document.getElementById('msgInput').disabled = false;
@@ -868,17 +932,13 @@
       const msgObj = {
         sender: myId,
         recipient: activeRecipient,
-        message: text
+        message: text,
+        isOwnerSender: currentUser.isOwner || myId === cleanIdentifier("yousephbello@gmail.com")
       };
 
-      // 1. Send via Socket
       socket.emit('send_private_message', msgObj);
-
-      // 2. Optimistically append message to current active chat window
       appendMessage(msgObj);
-
-      // 3. Update preview state in chat list
-      addContactToRecent(activeRecipient, text);
+      addContactToRecent(activeRecipient, text, msgObj.isOwnerSender);
 
       document.getElementById('msgInput').value = '';
     }
@@ -897,13 +957,12 @@
       const currentActive = cleanIdentifier(activeRecipient);
       const currentMe = cleanIdentifier(currentUser.identifier);
 
-      // Render in open window only if incoming message belongs to this active pair
       if (msgSender === currentActive && msgRecipient === currentMe) {
         appendMessage(msg);
       }
 
       const targetNumber = msgSender === currentMe ? msgRecipient : msgSender;
-      addContactToRecent(targetNumber, msg.message || 'Media File');
+      addContactToRecent(targetNumber, msg.message || 'Media File', msg.isOwnerSender);
     });
 
     function appendMessage(msg) {
@@ -914,7 +973,7 @@
       const isMe = cleanIdentifier(msg.sender) === cleanIdentifier(currentUser ? currentUser.identifier : '');
       const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      div.className = `message ${isMe ? 'sent' : 'received'}`;
+      div.className = `message ${isMe ? 'sent' : 'recv'}`;
 
       if (msg.message) {
         const p = document.createElement('div');
@@ -969,12 +1028,13 @@
           sender: myId,
           recipient: activeRecipient,
           message: '',
-          file: { data: evt.target.result, name: file.name, type: file.type }
+          file: { data: evt.target.result, name: file.name, type: file.type },
+          isOwnerSender: currentUser.isOwner || myId === cleanIdentifier("yousephbello@gmail.com")
         };
 
         socket.emit('send_private_message', msgObj);
         appendMessage(msgObj);
-        addContactToRecent(activeRecipient, '📷 Attachment');
+        addContactToRecent(activeRecipient, '📷 Attachment', msgObj.isOwnerSender);
       };
       reader.readAsDataURL(file);
     }
