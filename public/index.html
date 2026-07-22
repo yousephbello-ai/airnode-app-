@@ -11,19 +11,25 @@
     
     /* Left Sidebar */
     .sidebar { width: 350px; background: #111b21; border-right: 1px solid #222d34; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
-    .profile-card { display: flex; align-items: center; gap: 12px; background: #202c33; padding: 15px; border-radius: 10px; }
+    .profile-card { display: flex; align-items: center; justify-content: space-between; background: #202c33; padding: 15px; border-radius: 10px; }
+    .profile-left { display: flex; align-items: center; gap: 12px; }
     .avatar { width: 45px; height: 45px; background: #00a884; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 20px; }
-    .user-info h4 { font-size: 16px; color: #e9edef; }
-    .user-info p { font-size: 13px; color: #8696a0; margin-top: 2px; }
+    .user-info h4 { font-size: 14px; color: #8696a0; }
+    .user-info p { font-size: 15px; color: #e9edef; margin-top: 2px; font-weight: bold; }
+
+    /* Copy Button Style */
+    .copy-btn { background: #2a3942; border: none; color: #00a884; cursor: pointer; padding: 8px; border-radius: 6px; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+    .copy-btn:hover { background: #3b4a54; }
+    .copy-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
     .chat-starter { background: #182229; padding: 15px; border-radius: 10px; }
-    .chat-starter h3 { font-size: 14px; margin-bottom: 10px; color: #8696a0; text-transform: uppercase; }
+    .chat-starter h3 { font-size: 13px; margin-bottom: 10px; color: #8696a0; text-transform: uppercase; }
     .chat-starter input { width: 100%; padding: 10px; background: #2a3942; border: none; border-radius: 6px; color: #fff; margin-bottom: 10px; }
     .chat-starter button { width: 100%; padding: 10px; background: #00a884; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; }
 
     /* Right Chat Panel */
     .chat-panel { flex: 1; display: flex; flex-direction: column; background: #0b141a; }
-    .chat-header { padding: 15px 20px; background: #202c33; border-bottom: 1px solid #222d34; font-weight: bold; }
+    .chat-header { padding: 15px 20px; background: #202c33; border-bottom: 1px solid #222d34; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
     .messages-container { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
     
     .message { max-width: 60%; padding: 8px 12px; border-radius: 8px; font-size: 14px; line-height: 1.4; word-wrap: break-word; }
@@ -42,11 +48,19 @@
     <h2>Airnode</h2>
     
     <div class="profile-card">
-      <div class="avatar" id="myAvatar">Y</div>
-      <div class="user-info">
-        <h4>Your Number</h4>
-        <p id="myNumberDisplay">Generating...</p>
+      <div class="profile-left">
+        <div class="avatar" id="myAvatar">Y</div>
+        <div class="user-info">
+          <h4>Your Number</h4>
+          <p id="myNumberDisplay">Generating...</p>
+        </div>
       </div>
+      <!-- Copy Icon Button -->
+      <button class="copy-btn" title="Copy Number" onclick="copyMyNumber()">
+        <svg viewBox="0 0 24 24">
+          <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+        </svg>
+      </button>
     </div>
 
     <div class="chat-starter">
@@ -58,7 +72,9 @@
 
   <!-- Right Chat Panel -->
   <div class="chat-panel">
-    <div class="chat-header" id="chatHeader">Select or enter a number to start messaging</div>
+    <div class="chat-header" id="chatHeader">
+      <span id="chatTitle">Select or enter a number to start messaging</span>
+    </div>
     <div class="messages-container" id="messagesBox"></div>
     
     <div class="input-area">
@@ -82,6 +98,15 @@
 
     let currentRecipient = null;
 
+    // Copy phone number function
+    function copyMyNumber() {
+      navigator.clipboard.writeText(myNumber).then(() => {
+        alert('Phone number copied to clipboard! 📋');
+      }).catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+    }
+
     // 2. Open private chat with another number
     function startPrivateChat() {
       const recipient = document.getElementById('recipientInput').value.trim();
@@ -89,7 +114,7 @@
       if (recipient === myNumber) return alert("You can't message your own number!");
 
       currentRecipient = recipient;
-      document.getElementById('chatHeader').innerText = `Chatting with: ${currentRecipient}`;
+      document.getElementById('chatTitle').innerText = `Chatting with: ${currentRecipient}`;
       document.getElementById('msgInput').disabled = false;
       document.getElementById('sendBtn').disabled = false;
       document.getElementById('messagesBox').innerHTML = '';
