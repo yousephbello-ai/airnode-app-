@@ -542,6 +542,9 @@
   </div>
 
   <script>
+    // HARDCODED EXCLUSIVE OWNER ACCOUNT - CONSTANT
+    const EXCLUSIVE_OWNER_GMAIL = "yousephbello@gmail.com";
+
     // Gold Verified Badge HTML Snippet
     const GOLD_VERIFIED_BADGE = `
       <span class="gold-badge" title="Verified Owner Account">
@@ -598,13 +601,19 @@
 
     function initUserAccount() {
       let accounts = JSON.parse(localStorage.getItem('airnode_accounts') || '{}');
-      const ownerEmail = "yousephbello@gmail.com";
-      const cleanOwnerId = cleanIdentifier(ownerEmail);
+      const cleanOwnerId = cleanIdentifier(EXCLUSIVE_OWNER_GMAIL);
+
+      // Sanitize stored accounts: strip owner status from all non-owner accounts
+      Object.keys(accounts).forEach(accKey => {
+        if (accKey !== cleanOwnerId) {
+          accounts[accKey].isOwner = false;
+        }
+      });
 
       // Auto-register/verify owner account locally if not present
       if (!accounts[cleanOwnerId]) {
         accounts[cleanOwnerId] = {
-          identifier: ownerEmail,
+          identifier: EXCLUSIVE_OWNER_GMAIL,
           password: "siscom",
           question: "pet",
           answer: "owner",
@@ -612,15 +621,14 @@
           isOwner: true,
           virtualNumber: generateVirtualNumber()
         };
-        localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
       } else {
-        // Ensure owner privilege & gold badge remain active
+        // Ensure owner privilege remains active exclusively for owner
         accounts[cleanOwnerId].isOwner = true;
         if (!accounts[cleanOwnerId].virtualNumber) {
           accounts[cleanOwnerId].virtualNumber = generateVirtualNumber();
         }
-        localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
       }
+      localStorage.setItem('airnode_accounts', JSON.stringify(accounts));
 
       const stored = localStorage.getItem('airnode_user_profile');
       if (!stored) {
@@ -629,9 +637,14 @@
         updateProfileUI();
       } else {
         currentUser = JSON.parse(stored);
+        
+        // EXCLUSIVE CHECK: Only grant isOwner if identifier strictly matches EXCLUSIVE_OWNER_GMAIL
         if (cleanIdentifier(currentUser.identifier) === cleanOwnerId) {
           currentUser.isOwner = true;
+        } else {
+          currentUser.isOwner = false;
         }
+
         if (!currentUser.virtualNumber) {
           currentUser.virtualNumber = accounts[cleanIdentifier(currentUser.identifier)]?.virtualNumber || generateVirtualNumber();
         }
@@ -644,8 +657,10 @@
     function updateProfileUI() {
       if (!currentUser) return;
       
+      const isOwner = cleanIdentifier(currentUser.identifier) === cleanIdentifier(EXCLUSIVE_OWNER_GMAIL) && currentUser.isOwner;
+      
       const profileNameEl = document.getElementById('settingsName');
-      profileNameEl.innerHTML = `<span>${currentUser.identifier}</span> ${currentUser.isOwner ? GOLD_VERIFIED_BADGE : ''}`;
+      profileNameEl.innerHTML = `<span>${currentUser.identifier}</span> ${isOwner ? GOLD_VERIFIED_BADGE : ''}`;
       
       document.getElementById('settingsHandle').innerText = `@${cleanIdentifier(currentUser.identifier)}`;
       
@@ -747,7 +762,7 @@
           <span onclick="toggleAuthMode(false)" style="display:block; text-align:center; font-size:12px; color:var(--an-neon-cyan); margin-top:8px; cursor:pointer; text-decoration:underline;">Need an account? Register</span>
         `;
       } else {
-        document.getElementById('authTitle').innerText = 'Create Owner Account';
+        document.getElementById('authTitle').innerText = 'Create Account';
         document.getElementById('authFormFields').innerHTML = `
           <input type="text" id="authAccountInput" placeholder="Enter Gmail or Phone Number">
           <input type="password" id="authPasswordInput" placeholder="Create Password">
@@ -767,7 +782,7 @@
     function toggleForgotMode(show) {
       document.getElementById('authFormFields').style.display = show ? 'none' : 'block';
       document.getElementById('forgotFormFields').style.display = show ? 'block' : 'none';
-      document.getElementById('authTitle').innerText = show ? 'Recover Password' : (isLoginMode ? 'Login to Airnode' : 'Create Owner Account');
+      document.getElementById('authTitle').innerText = show ? 'Recover Password' : (isLoginMode ? 'Login to Airnode' : 'Create Account');
     }
 
     function submitAuth(isLogin) {
@@ -778,12 +793,16 @@
 
       let accounts = JSON.parse(localStorage.getItem('airnode_accounts') || '{}');
       const cleanId = cleanIdentifier(id);
+      const cleanOwnerId = cleanIdentifier(EXCLUSIVE_OWNER_GMAIL);
 
       if (isLogin) {
         if (!accounts[cleanId] || accounts[cleanId].password !== pwd) {
           return alert('Invalid Account Credentials or Account does not exist!');
         }
         currentUser = accounts[cleanId];
+        // Enforce owner check on login
+        currentUser.isOwner = (cleanId === cleanOwnerId);
+        
         if (!currentUser.virtualNumber) {
           currentUser.virtualNumber = generateVirtualNumber();
           accounts[cleanId].virtualNumber = currentUser.virtualNumber;
@@ -794,7 +813,8 @@
         const a = document.getElementById('authSecAnswer').value.trim().toLowerCase();
         if (!a) return alert('Security question answer is required!');
 
-        const isOwner = cleanId === cleanIdentifier("yousephbello@gmail.com");
+        // EXCLUSIVE CHECK: Only your exact Gmail gets isOwner set to true
+        const isOwner = (cleanId === cleanOwnerId);
         const assignedVirtualNumber = generateVirtualNumber();
 
         currentUser = { 
@@ -907,12 +927,13 @@
       const existing = recentChats.find(c => cleanIdentifier(c.number) === cleanTarget);
       const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-      const isOwner = isOwnerContact || cleanTarget === cleanIdentifier("yousephbello@gmail.com");
+      // STRICT CHECK: Only mark contact as owner if target matches EXCLUSIVE_OWNER_GMAIL
+      const isOwner = isOwnerContact && (cleanTarget === cleanIdentifier(EXCLUSIVE_OWNER_GMAIL));
 
       if (existing) {
         existing.lastMsg = lastMsg || existing.lastMsg;
         existing.time = now;
-        if (isOwner) existing.isOwner = true;
+        existing.isOwner = isOwner;
       } else {
         recentChats.unshift({ number: target, lastMsg, time: now, favourite: false, unread: false, isGroup: false, isOwner: isOwner });
       }
@@ -935,7 +956,8 @@
         div.className = `chat-item ${cleanIdentifier(activeRecipient) === cleanIdentifier(chat.number) ? 'active' : ''}`;
         div.onclick = () => openChat(chat.number);
 
-        const isOwnerBadge = (currentUser && cleanIdentifier(chat.number) === cleanIdentifier(currentUser.identifier) && currentUser.isOwner) || chat.isOwner || cleanIdentifier(chat.number) === cleanIdentifier("yousephbello@gmail.com");
+        // EXCLUSIVE CHECK: Badge is ONLY displayed if contact identifier is strictly EXCLUSIVE_OWNER_GMAIL
+        const isOwnerBadge = cleanIdentifier(chat.number) === cleanIdentifier(EXCLUSIVE_OWNER_GMAIL);
 
         div.innerHTML = `
           <div class="chat-avatar">${chat.number.substring(0, 2).toUpperCase()}</div>
@@ -957,7 +979,9 @@
       activeRecipient = cleanIdentifier(recipientNumber);
       
       const activeNameHeader = document.getElementById('activeChatName');
-      const isOwnerAccount = activeRecipient === cleanIdentifier("yousephbello@gmail.com") || (currentUser && activeRecipient === cleanIdentifier(currentUser.identifier) && currentUser.isOwner);
+      
+      // EXCLUSIVE CHECK: Badge only shown for active recipient if it matches EXCLUSIVE_OWNER_GMAIL
+      const isOwnerAccount = activeRecipient === cleanIdentifier(EXCLUSIVE_OWNER_GMAIL);
       
       activeNameHeader.innerHTML = `${recipientNumber} ${isOwnerAccount ? GOLD_VERIFIED_BADGE : ''}`;
       document.getElementById('activeChatAvatar').innerText = recipientNumber.substring(0, 2).toUpperCase();
@@ -983,12 +1007,13 @@
       if (!text || !activeRecipient || !currentUser) return;
 
       const myId = cleanIdentifier(currentUser.identifier);
+      const isOwner = (myId === cleanIdentifier(EXCLUSIVE_OWNER_GMAIL));
 
       const msgObj = {
         sender: myId,
         recipient: activeRecipient,
         message: text,
-        isOwnerSender: currentUser.isOwner || myId === cleanIdentifier("yousephbello@gmail.com")
+        isOwnerSender: isOwner
       };
 
       socket.emit('send_private_message', msgObj);
@@ -1017,7 +1042,10 @@
       }
 
       const targetNumber = msgSender === currentMe ? msgRecipient : msgSender;
-      addContactToRecent(targetNumber, msg.message || 'Media File', msg.isOwnerSender);
+      
+      // Validate sender is strictly the owner before accepting isOwnerSender flag from stream
+      const verifiedIsOwner = msg.isOwnerSender && (msgSender === cleanIdentifier(EXCLUSIVE_OWNER_GMAIL));
+      addContactToRecent(targetNumber, msg.message || 'Media File', verifiedIsOwner);
     });
 
     function appendMessage(msg) {
@@ -1076,6 +1104,7 @@
       if (!file || !activeRecipient || !currentUser) return;
 
       const myId = cleanIdentifier(currentUser.identifier);
+      const isOwner = (myId === cleanIdentifier(EXCLUSIVE_OWNER_GMAIL));
 
       const reader = new FileReader();
       reader.onload = function(evt) {
@@ -1084,7 +1113,7 @@
           recipient: activeRecipient,
           message: '',
           file: { data: evt.target.result, name: file.name, type: file.type },
-          isOwnerSender: currentUser.isOwner || myId === cleanIdentifier("yousephbello@gmail.com")
+          isOwnerSender: isOwner
         };
 
         socket.emit('send_private_message', msgObj);
